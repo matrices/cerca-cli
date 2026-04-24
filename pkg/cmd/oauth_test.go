@@ -16,7 +16,7 @@ func TestOAuthConnect(t *testing.T) {
 			"oauth", "connect",
 			"--provider", "google",
 			"--return-origin", "https://app.example.com",
-			"--scope", "env:org_abc123:env_abc123",
+			"--scope", "env:org_abc123:fleet_abc123",
 			"--scope", "email",
 			"--scope", "profile",
 		)
@@ -26,7 +26,7 @@ func TestOAuthConnect(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
 			"returnOrigin: https://app.example.com\n" +
-			"scope: env:org_abc123:env_abc123\n" +
+			"scope: env:org_abc123:fleet_abc123\n" +
 			"scopes:\n" +
 			"  - email\n" +
 			"  - profile\n")

@@ -14,7 +14,8 @@ func TestCredentialsList(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"credentials", "list",
-			"--scope", "env:org_abc123:env_abc123",
+			"--max-items", "10",
+			"--scope", "env:org_abc123:fleet_abc123",
 			"--cursor", "cursor_abc123",
 			"--limit", "20",
 		)
@@ -27,8 +28,8 @@ func TestCredentialsDelete(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"credentials", "delete",
-			"--scope", "env:org_abc123:env_abc123",
-			"--connection-id", "env:org_abc123:env_abc123::conn_abc123",
+			"--scope", "env:org_abc123:fleet_abc123",
+			"--connection-id", "env:org_abc123:fleet_abc123::conn_abc123",
 		)
 	})
 }
@@ -39,7 +40,7 @@ func TestCredentialsCreateAPIKey(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"credentials", "create-api-key",
-			"--scope", "env:org_abc123:env_abc123",
+			"--scope", "env:org_abc123:fleet_abc123",
 			"--api-key", "sk_live_...",
 			"--provider", "custom",
 			"--account-label", "primary",
@@ -56,7 +57,7 @@ func TestCredentialsCreateAPIKey(t *testing.T) {
 			t, pipeData,
 			"--api-key", "string",
 			"credentials", "create-api-key",
-			"--scope", "env:org_abc123:env_abc123",
+			"--scope", "env:org_abc123:fleet_abc123",
 		)
 	})
 }

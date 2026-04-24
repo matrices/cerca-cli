@@ -14,13 +14,13 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var credentialsList = cli.Command{
+var approvalsList = cli.Command{
 	Name:    "list",
 	Usage:   "Perform list operation",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "scope",
+			Name:     "agent-id",
 			Required: true,
 		},
 		&requestflag.Flag[string]{
@@ -33,76 +33,65 @@ var credentialsList = cli.Command{
 			Usage:     "Maximum number of items to return. Defaults to 20 and preserves parseInt semantics.",
 			QueryPath: "limit",
 		},
+		&requestflag.Flag[string]{
+			Name:      "thread-id",
+			Usage:     "Optional thread id filter.",
+			QueryPath: "threadId",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
 		},
 	},
-	Action:          handleCredentialsList,
+	Action:          handleApprovalsList,
 	HideHelpCommand: true,
 }
 
-var credentialsDelete = cli.Command{
-	Name:    "delete",
-	Usage:   "Perform delete operation",
+var approvalsResolve = cli.Command{
+	Name:    "resolve",
+	Usage:   "Perform resolve operation",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "scope",
+			Name:     "agent-id",
 			Required: true,
 		},
 		&requestflag.Flag[string]{
-			Name:     "connection-id",
+			Name:     "thread-id",
 			Required: true,
 		},
+		&requestflag.Flag[string]{
+			Name:     "approval-id",
+			Required: true,
+		},
+		&requestflag.Flag[string]{
+			Name:     "decision",
+			Usage:    `Allowed values: "approve", "deny", "cancel".`,
+			Required: true,
+			BodyPath: "decision",
+		},
+		&requestflag.Flag[string]{
+			Name:     "grant",
+			Usage:    `Allowed values: "thread", "agent".`,
+			BodyPath: "grant",
+		},
 	},
-	Action:          handleCredentialsDelete,
+	Action:          handleApprovalsResolve,
 	HideHelpCommand: true,
 }
 
-var credentialsCreateAPIKey = cli.Command{
-	Name:    "create-api-key",
-	Usage:   "Perform create-api-key operation",
-	Suggest: true,
-	Flags: []cli.Flag{
-		&requestflag.Flag[string]{
-			Name:     "scope",
-			Required: true,
-		},
-		&requestflag.Flag[string]{
-			Name:     "api-key",
-			Usage:    "API key secret. It is stored securely and is not returned.",
-			Required: true,
-			BodyPath: "apiKey",
-		},
-		&requestflag.Flag[string]{
-			Name:     "provider",
-			Usage:    "Credential provider to store an API key for.",
-			Required: true,
-			BodyPath: "provider",
-		},
-		&requestflag.Flag[string]{
-			Name:     "account-label",
-			Usage:    "Optional human-readable account label.",
-			BodyPath: "accountLabel",
-		},
-	},
-	Action:          handleCredentialsCreateAPIKey,
-	HideHelpCommand: true,
-}
-
-func handleCredentialsList(ctx context.Context, cmd *cli.Command) error {
+func handleApprovalsList(ctx context.Context, cmd *cli.Command) error {
 	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("scope") && len(unusedArgs) > 0 {
-		cmd.Set("scope", unusedArgs[0])
+	if !cmd.IsSet("agent-id") && len(unusedArgs) > 0 {
+		cmd.Set("agent-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.CredentialListParams{}
+	params := cercago.ApprovalListParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -121,9 +110,9 @@ func handleCredentialsList(ctx context.Context, cmd *cli.Command) error {
 	if format == "raw" {
 		var res []byte
 		options = append(options, option.WithResponseBodyInto(&res))
-		_, err = client.Credentials.List(
+		_, err = client.Approvals.List(
 			ctx,
-			cmd.Value("scope").(string),
+			cmd.Value("agent-id").(string),
 			params,
 			options...,
 		)
@@ -135,13 +124,13 @@ func handleCredentialsList(ctx context.Context, cmd *cli.Command) error {
 			ExplicitFormat: explicitFormat,
 			Format:         format,
 			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "credentials list",
+			Title:          "approvals list",
 			Transform:      transform,
 		})
 	} else {
-		iter := client.Credentials.ListAutoPaging(
+		iter := client.Approvals.ListAutoPaging(
 			ctx,
-			cmd.Value("scope").(string),
+			cmd.Value("agent-id").(string),
 			params,
 			options...,
 		)
@@ -153,75 +142,32 @@ func handleCredentialsList(ctx context.Context, cmd *cli.Command) error {
 			ExplicitFormat: explicitFormat,
 			Format:         format,
 			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "credentials list",
+			Title:          "approvals list",
 			Transform:      transform,
 		})
 	}
 }
 
-func handleCredentialsDelete(ctx context.Context, cmd *cli.Command) error {
+func handleApprovalsResolve(ctx context.Context, cmd *cli.Command) error {
 	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("scope") && len(unusedArgs) > 0 {
-		cmd.Set("scope", unusedArgs[0])
+	if !cmd.IsSet("agent-id") && len(unusedArgs) > 0 {
+		cmd.Set("agent-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
-	if !cmd.IsSet("connection-id") && len(unusedArgs) > 0 {
-		cmd.Set("connection-id", unusedArgs[0])
+	if !cmd.IsSet("thread-id") && len(unusedArgs) > 0 {
+		cmd.Set("thread-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
+	if !cmd.IsSet("approval-id") && len(unusedArgs) > 0 {
+		cmd.Set("approval-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	options, err := flagOptions(
-		cmd,
-		apiquery.NestedQueryFormatBrackets,
-		apiquery.ArrayQueryFormatComma,
-		EmptyBody,
-		false,
-	)
-	if err != nil {
-		return err
-	}
-
-	var res []byte
-	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Credentials.Delete(
-		ctx,
-		cmd.Value("scope").(string),
-		cmd.Value("connection-id").(string),
-		options...,
-	)
-	if err != nil {
-		return err
-	}
-
-	obj := gjson.ParseBytes(res)
-	format := cmd.Root().String("format")
-	explicitFormat := cmd.Root().IsSet("format")
-	transform := cmd.Root().String("transform")
-	return ShowJSON(obj, ShowJSONOpts{
-		ExplicitFormat: explicitFormat,
-		Format:         format,
-		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "credentials delete",
-		Transform:      transform,
-	})
-}
-
-func handleCredentialsCreateAPIKey(ctx context.Context, cmd *cli.Command) error {
-	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
-	unusedArgs := cmd.Args().Slice()
-	if !cmd.IsSet("scope") && len(unusedArgs) > 0 {
-		cmd.Set("scope", unusedArgs[0])
-		unusedArgs = unusedArgs[1:]
-	}
-	if len(unusedArgs) > 0 {
-		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
-	}
-
-	params := cercago.CredentialNewAPIKeyParams{}
+	params := cercago.ApprovalResolveParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -236,9 +182,11 @@ func handleCredentialsCreateAPIKey(ctx context.Context, cmd *cli.Command) error 
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Credentials.NewAPIKey(
+	_, err = client.Approvals.Resolve(
 		ctx,
-		cmd.Value("scope").(string),
+		cmd.Value("agent-id").(string),
+		cmd.Value("thread-id").(string),
+		cmd.Value("approval-id").(string),
 		params,
 		options...,
 	)
@@ -254,7 +202,7 @@ func handleCredentialsCreateAPIKey(ctx context.Context, cmd *cli.Command) error 
 		ExplicitFormat: explicitFormat,
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "credentials create-api-key",
+		Title:          "approvals resolve",
 		Transform:      transform,
 	})
 }
