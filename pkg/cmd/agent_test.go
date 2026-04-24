@@ -5,8 +5,8 @@ package cmd
 import (
 	"testing"
 
-	"github.com/stainless-sdks/cerca-cli/internal/mocktest"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
+	"github.com/matrices/cerca-cli/internal/mocktest"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 )
 
 func TestAgentsCreate(t *testing.T) {
