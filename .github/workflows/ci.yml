@@ -15,7 +15,7 @@ on:
       - 'stl-preview-base/**'
 
 env:
-  GOPRIVATE: github.com/stainless-sdks/cerca-go
+  GOPRIVATE: github.com/matrices/cerca-go,github.com/stainless-sdks/cerca-go
 
 jobs:
   lint:
