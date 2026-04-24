@@ -16,8 +16,8 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/matrices/cerca-cli/internal/jsonview"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/jsonview"
 
 	"github.com/charmbracelet/x/term"
 	"github.com/itchyny/json2yaml"
