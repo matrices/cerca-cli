@@ -23,9 +23,9 @@ var authContext = cli.Command{
 	HideHelpCommand: true,
 }
 
-var authListEnvironments = cli.Command{
-	Name:    "list-environments",
-	Usage:   "Perform list-environments operation",
+var authListFleets = cli.Command{
+	Name:    "list-fleets",
+	Usage:   "Perform list-fleets operation",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -38,8 +38,12 @@ var authListEnvironments = cli.Command{
 			Usage:     "Maximum number of items to return. Defaults to 20 and preserves parseInt semantics.",
 			QueryPath: "limit",
 		},
+		&requestflag.Flag[int64]{
+			Name:  "max-items",
+			Usage: "The maximum number of items to return (use -1 for unlimited).",
+		},
 	},
-	Action:          handleAuthListEnvironments,
+	Action:          handleAuthListFleets,
 	HideHelpCommand: true,
 }
 
@@ -82,7 +86,7 @@ func handleAuthContext(ctx context.Context, cmd *cli.Command) error {
 	})
 }
 
-func handleAuthListEnvironments(ctx context.Context, cmd *cli.Command) error {
+func handleAuthListFleets(ctx context.Context, cmd *cli.Command) error {
 	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
 
@@ -90,7 +94,7 @@ func handleAuthListEnvironments(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.AuthListEnvironmentsParams{}
+	params := cercago.AuthListFleetsParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -103,22 +107,36 @@ func handleAuthListEnvironments(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	var res []byte
-	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Auth.ListEnvironments(ctx, params, options...)
-	if err != nil {
-		return err
-	}
-
-	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(obj, ShowJSONOpts{
-		ExplicitFormat: explicitFormat,
-		Format:         format,
-		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "auth list-environments",
-		Transform:      transform,
-	})
+	if format == "raw" {
+		var res []byte
+		options = append(options, option.WithResponseBodyInto(&res))
+		_, err = client.Auth.ListFleets(ctx, params, options...)
+		if err != nil {
+			return err
+		}
+		obj := gjson.ParseBytes(res)
+		return ShowJSON(obj, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
+			Title:          "auth list-fleets",
+			Transform:      transform,
+		})
+	} else {
+		iter := client.Auth.ListFleetsAutoPaging(ctx, params, options...)
+		maxItems := int64(-1)
+		if cmd.IsSet("max-items") {
+			maxItems = cmd.Value("max-items").(int64)
+		}
+		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
+			Title:          "auth list-fleets",
+			Transform:      transform,
+		})
+	}
 }

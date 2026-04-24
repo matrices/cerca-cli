@@ -44,9 +44,9 @@ cerca [resource] <command> [flags...]
 ```
 
 ```sh
-cerca cells:threads create \
+cerca threads create \
   --api-key 'My API Key' \
-  --cell-id cell_abc123 \
+  --agent-id agent_abc123 \
   --user-message "What's on my calendar today?"
 ```
 

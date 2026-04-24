@@ -8,23 +8,29 @@ import (
 	"github.com/stainless-sdks/cerca-cli/internal/mocktest"
 )
 
-func TestAuthContext(t *testing.T) {
+func TestLogsListForAgent(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"--api-key", "string",
-			"auth", "context",
+			"logs", "list-for-agent",
+			"--max-items", "10",
+			"--agent-id", "agent_abc123",
+			"--cursor", "cursor_abc123",
+			"--limit", "20",
 		)
 	})
 }
 
-func TestAuthListFleets(t *testing.T) {
+func TestLogsListForThread(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"--api-key", "string",
-			"auth", "list-fleets",
+			"logs", "list-for-thread",
 			"--max-items", "10",
+			"--agent-id", "agent_abc123",
+			"--thread-id", "thread_abc123",
 			"--cursor", "cursor_abc123",
 			"--limit", "20",
 		)
