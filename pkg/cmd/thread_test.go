@@ -49,8 +49,11 @@ func TestThreadsRetrieve(t *testing.T) {
 			"threads", "retrieve",
 			"--agent-id", "agent_abc123",
 			"--thread-id", "thread_abc123",
+			"--after-seq", "42",
+			"--before-seq", "42",
 			"--debug", "false",
 			"--include-messages", "true",
+			"--message-limit", "50",
 		)
 	})
 }

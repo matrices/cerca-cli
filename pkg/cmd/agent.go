@@ -19,11 +19,6 @@ var agentsCreate = requestflag.WithInnerFlags(cli.Command{
 	Usage:   "Perform create operation",
 	Suggest: true,
 	Flags: []cli.Flag{
-		&requestflag.Flag[string]{
-			Name:     "user-id",
-			Required: true,
-			BodyPath: "userId",
-		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "configuration",
 			BodyPath: "configuration",
@@ -36,6 +31,10 @@ var agentsCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:     "metadata",
 			Usage:    "Arbitrary string metadata stored on an agent. Runtime enforces maximum key and value sizes.",
 			BodyPath: "metadata",
+		},
+		&requestflag.Flag[string]{
+			Name:     "user-id",
+			BodyPath: "userId",
 		},
 	},
 	Action:          handleAgentsCreate,

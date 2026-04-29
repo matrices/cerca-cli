@@ -63,6 +63,16 @@ var threadsRetrieve = cli.Command{
 			Required: true,
 		},
 		&requestflag.Flag[string]{
+			Name:      "after-seq",
+			Usage:     "Return messages newer than this sequence number. Mutually exclusive with `beforeSeq`.",
+			QueryPath: "afterSeq",
+		},
+		&requestflag.Flag[string]{
+			Name:      "before-seq",
+			Usage:     "Return messages older than this sequence number. Mutually exclusive with `afterSeq`.",
+			QueryPath: "beforeSeq",
+		},
+		&requestflag.Flag[string]{
 			Name:      "debug",
 			Usage:     "When true, includes debug-only compiled context fields.",
 			QueryPath: "debug",
@@ -71,6 +81,11 @@ var threadsRetrieve = cli.Command{
 			Name:      "include-messages",
 			Usage:     "When true, includes message content in the thread detail.",
 			QueryPath: "includeMessages",
+		},
+		&requestflag.Flag[string]{
+			Name:      "message-limit",
+			Usage:     "Maximum number of messages to include. Set to 0 to return metadata without messages.",
+			QueryPath: "messageLimit",
 		},
 	},
 	Action:          handleThreadsRetrieve,
