@@ -24,11 +24,6 @@ var schedulesCreate = cli.Command{
 			Required: true,
 		},
 		&requestflag.Flag[string]{
-			Name:     "cron",
-			Required: true,
-			BodyPath: "cron",
-		},
-		&requestflag.Flag[string]{
 			Name:     "name",
 			Required: true,
 			BodyPath: "name",
@@ -39,12 +34,20 @@ var schedulesCreate = cli.Command{
 			BodyPath: "prompt",
 		},
 		&requestflag.Flag[string]{
+			Name:     "cron",
+			BodyPath: "cron",
+		},
+		&requestflag.Flag[string]{
 			Name:     "instructions",
 			BodyPath: "instructions",
 		},
 		&requestflag.Flag[string]{
 			Name:     "model",
 			BodyPath: "model",
+		},
+		&requestflag.Flag[any]{
+			Name:     "run-at",
+			BodyPath: "runAt",
 		},
 		&requestflag.Flag[string]{
 			Name:     "timezone",
@@ -95,6 +98,10 @@ var schedulesUpdate = cli.Command{
 		&requestflag.Flag[string]{
 			Name:     "prompt",
 			BodyPath: "prompt",
+		},
+		&requestflag.Flag[any]{
+			Name:     "run-at",
+			BodyPath: "runAt",
 		},
 		&requestflag.Flag[string]{
 			Name:     "timezone",

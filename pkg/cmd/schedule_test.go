@@ -15,11 +15,12 @@ func TestSchedulesCreate(t *testing.T) {
 			"--api-key", "string",
 			"schedules", "create",
 			"--agent-id", "agent_abc123",
-			"--cron", "cron",
 			"--name", "name",
 			"--prompt", "prompt",
+			"--cron", "cron",
 			"--instructions", "instructions",
 			"--model", "model",
+			"--run-at", "'2019-12-27T18:11:19.117Z'",
 			"--timezone", "timezone",
 			"--tool", "sandbox.*",
 		)
@@ -28,11 +29,12 @@ func TestSchedulesCreate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"cron: cron\n" +
 			"name: name\n" +
 			"prompt: prompt\n" +
+			"cron: cron\n" +
 			"instructions: instructions\n" +
 			"model: model\n" +
+			"runAt: '2019-12-27T18:11:19.117Z'\n" +
 			"timezone: timezone\n" +
 			"tools:\n" +
 			"  - sandbox.*\n")
@@ -59,6 +61,7 @@ func TestSchedulesUpdate(t *testing.T) {
 			"--model", "model",
 			"--name", "name",
 			"--prompt", "prompt",
+			"--run-at", "'2019-12-27T18:11:19.117Z'",
 			"--timezone", "timezone",
 			"--tool", "sandbox.*",
 		)
@@ -73,6 +76,7 @@ func TestSchedulesUpdate(t *testing.T) {
 			"model: model\n" +
 			"name: name\n" +
 			"prompt: prompt\n" +
+			"runAt: '2019-12-27T18:11:19.117Z'\n" +
 			"timezone: timezone\n" +
 			"tools:\n" +
 			"  - sandbox.*\n")

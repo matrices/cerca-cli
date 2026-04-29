@@ -15,10 +15,10 @@ func TestAgentsCreate(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"agents", "create",
-			"--user-id", "userId",
 			"--configuration", "{approvals: {timeoutMs: 0, tools: {foo: always}}, defaultModel: defaultModel, instructions: instructions, tools: [sandbox.*]}",
 			"--fleet-id", "fleetId",
 			"--metadata", "{project: alpha}",
+			"--user-id", "userId",
 		)
 	})
 
@@ -31,20 +31,19 @@ func TestAgentsCreate(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"agents", "create",
-			"--user-id", "userId",
 			"--configuration.approvals", "{timeoutMs: 0, tools: {foo: always}}",
 			"--configuration.default-model", "defaultModel",
 			"--configuration.instructions", "instructions",
 			"--configuration.tools", "[sandbox.*]",
 			"--fleet-id", "fleetId",
 			"--metadata", "{project: alpha}",
+			"--user-id", "userId",
 		)
 	})
 
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"userId: userId\n" +
 			"configuration:\n" +
 			"  approvals:\n" +
 			"    timeoutMs: 0\n" +
@@ -56,7 +55,8 @@ func TestAgentsCreate(t *testing.T) {
 			"    - sandbox.*\n" +
 			"fleetId: fleetId\n" +
 			"metadata:\n" +
-			"  project: alpha\n")
+			"  project: alpha\n" +
+			"userId: userId\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
