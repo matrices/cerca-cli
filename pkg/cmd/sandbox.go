@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var sandboxExec = cli.Command{
 	Name:    "exec",
-	Usage:   "Exec",
+	Usage:   "Execute sandbox command",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -50,7 +50,7 @@ var sandboxExec = cli.Command{
 
 var sandboxRead = cli.Command{
 	Name:    "read",
-	Usage:   "Read",
+	Usage:   "Read sandbox file",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -78,7 +78,7 @@ var sandboxRead = cli.Command{
 
 var sandboxWrite = cli.Command{
 	Name:    "write",
-	Usage:   "Write",
+	Usage:   "Write sandbox file",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var threadsCreate = cli.Command{
 	Name:    "create",
-	Usage:   "Threads",
+	Usage:   "Create thread",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -53,7 +53,7 @@ var threadsCreate = cli.Command{
 
 var threadsRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Thread",
+	Usage:   "Retrieve thread",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -83,7 +83,7 @@ var threadsRetrieve = cli.Command{
 
 var threadsList = cli.Command{
 	Name:    "list",
-	Usage:   "Threads",
+	Usage:   "List threads",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -182,7 +182,7 @@ var threadsCompact = cli.Command{
 
 var threadsStartTurn = cli.Command{
 	Name:    "start-turn",
-	Usage:   "Turns",
+	Usage:   "Create turn",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

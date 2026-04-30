@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var approvalRequestsList = cli.Command{
 	Name:    "list",
-	Usage:   "Approvals",
+	Usage:   "List approvals",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -50,7 +50,7 @@ var approvalRequestsList = cli.Command{
 
 var approvalRequestsResolve = cli.Command{
 	Name:    "resolve",
-	Usage:   "Approval",
+	Usage:   "Create approval",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

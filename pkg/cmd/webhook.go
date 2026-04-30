@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var webhooksCreate = cli.Command{
 	Name:    "create",
-	Usage:   "Webhooks",
+	Usage:   "Create webhook",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -42,7 +42,7 @@ var webhooksCreate = cli.Command{
 
 var webhooksRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Webhook",
+	Usage:   "Retrieve webhook",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -62,7 +62,7 @@ var webhooksRetrieve = cli.Command{
 
 var webhooksUpdate = cli.Command{
 	Name:    "update",
-	Usage:   "Webhook",
+	Usage:   "Update webhook",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -97,7 +97,7 @@ var webhooksUpdate = cli.Command{
 
 var webhooksList = cli.Command{
 	Name:    "list",
-	Usage:   "Webhooks",
+	Usage:   "List webhooks",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -126,7 +126,7 @@ var webhooksList = cli.Command{
 
 var webhooksDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Webhook",
+	Usage:   "Delete webhook",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -146,7 +146,7 @@ var webhooksDelete = cli.Command{
 
 var webhooksRotate = cli.Command{
 	Name:    "rotate",
-	Usage:   "Rotate",
+	Usage:   "Rotate webhook secret",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -166,7 +166,7 @@ var webhooksRotate = cli.Command{
 
 var webhooksTest = cli.Command{
 	Name:    "test",
-	Usage:   "Test",
+	Usage:   "Send test webhook",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
