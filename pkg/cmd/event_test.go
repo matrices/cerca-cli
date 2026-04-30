@@ -5,7 +5,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/matrices/cerca-cli/internal/mocktest"
+	"github.com/stainless-sdks/cerca-cli/internal/mocktest"
 )
 
 func TestEventsListForAgent(t *testing.T) {

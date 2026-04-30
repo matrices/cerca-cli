@@ -16,11 +16,11 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/matrices/cerca-cli/internal/apiform"
-	"github.com/matrices/cerca-cli/internal/apiquery"
-	"github.com/matrices/cerca-cli/internal/debugmiddleware"
-	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go/option"
+	"github.com/stainless-sdks/cerca-cli/internal/apiform"
+	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
+	"github.com/stainless-sdks/cerca-cli/internal/debugmiddleware"
+	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 
 	"github.com/goccy/go-yaml"
 	"github.com/urfave/cli/v3"

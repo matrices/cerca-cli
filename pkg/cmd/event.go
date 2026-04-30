@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/matrices/cerca-cli/internal/apiquery"
-	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
+	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
+	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var eventsListForAgent = cli.Command{
 	Name:    "list-for-agent",
-	Usage:   "Perform list-for-agent operation",
+	Usage:   "Events",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -55,7 +55,7 @@ var eventsListForAgent = cli.Command{
 
 var eventsListForFleet = cli.Command{
 	Name:    "list-for-fleet",
-	Usage:   "Perform list-for-fleet operation",
+	Usage:   "Events",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -94,7 +94,7 @@ var eventsListForFleet = cli.Command{
 
 var eventsListForThread = cli.Command{
 	Name:    "list-for-thread",
-	Usage:   "Perform list-for-thread operation",
+	Usage:   "Events",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

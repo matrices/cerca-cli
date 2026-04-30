@@ -5,7 +5,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/matrices/cerca-cli/internal/mocktest"
+	"github.com/stainless-sdks/cerca-cli/internal/mocktest"
 )
 
 func TestThreadsCreate(t *testing.T) {
@@ -16,10 +16,10 @@ func TestThreadsCreate(t *testing.T) {
 			"threads", "create",
 			"--agent-id", "agent_abc123",
 			"--instructions", "instructions",
+			"--message", "message",
 			"--model", "model",
 			"--system-prompt", "systemPrompt",
 			"--tool", "sandbox.*",
-			"--user-message", "userMessage",
 		)
 	})
 
@@ -27,11 +27,11 @@ func TestThreadsCreate(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
 			"instructions: instructions\n" +
+			"message: message\n" +
 			"model: model\n" +
 			"systemPrompt: systemPrompt\n" +
 			"tools:\n" +
-			"  - sandbox.*\n" +
-			"userMessage: userMessage\n")
+			"  - sandbox.*\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
@@ -49,11 +49,8 @@ func TestThreadsRetrieve(t *testing.T) {
 			"threads", "retrieve",
 			"--agent-id", "agent_abc123",
 			"--thread-id", "thread_abc123",
-			"--after-seq", "42",
-			"--before-seq", "42",
 			"--debug", "false",
 			"--include-messages", "true",
-			"--message-limit", "50",
 		)
 	})
 }
@@ -118,7 +115,7 @@ func TestThreadsStartTurn(t *testing.T) {
 			"threads", "start-turn",
 			"--agent-id", "agent_abc123",
 			"--thread-id", "thread_abc123",
-			"--user-message", "userMessage",
+			"--message", "message",
 			"--model", "model",
 			"--tool", "sandbox.*",
 		)
@@ -127,7 +124,7 @@ func TestThreadsStartTurn(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"userMessage: userMessage\n" +
+			"message: message\n" +
 			"model: model\n" +
 			"tools:\n" +
 			"  - sandbox.*\n")
