@@ -37,7 +37,7 @@ var sandboxExec = cli.Command{
 			Usage:    "Timeout in seconds. Runtime converts this to milliseconds.",
 			BodyPath: "timeout",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "workdir",
 			Usage:    "Optional sandbox working directory.",
 			BodyPath: "workdir",
