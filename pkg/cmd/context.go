@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var contextRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Entry",
+	Usage:   "Retrieve context entry",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -37,7 +37,7 @@ var contextRetrieve = cli.Command{
 
 var contextList = cli.Command{
 	Name:    "list",
-	Usage:   "Context",
+	Usage:   "List context entries",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -71,7 +71,7 @@ var contextList = cli.Command{
 
 var contextDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Entry",
+	Usage:   "Delete context entry",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -92,7 +92,7 @@ var contextDelete = cli.Command{
 
 var contextSearch = cli.Command{
 	Name:    "search",
-	Usage:   "Search",
+	Usage:   "Search context",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -132,7 +132,7 @@ var contextSearch = cli.Command{
 
 var contextWrite = cli.Command{
 	Name:    "write",
-	Usage:   "Entry",
+	Usage:   "Update context entry",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

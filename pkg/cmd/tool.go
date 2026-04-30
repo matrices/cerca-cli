@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var toolsCreate = cli.Command{
 	Name:    "create",
-	Usage:   "Tool Sources",
+	Usage:   "Create tool source",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -36,7 +36,7 @@ var toolsCreate = cli.Command{
 
 var toolsRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Tool Source",
+	Usage:   "Retrieve tool source",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -56,7 +56,7 @@ var toolsRetrieve = cli.Command{
 
 var toolsUpdate = cli.Command{
 	Name:    "update",
-	Usage:   "Tool Source",
+	Usage:   "Update tool source",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -81,7 +81,7 @@ var toolsUpdate = cli.Command{
 
 var toolsList = cli.Command{
 	Name:    "list",
-	Usage:   "Tool Sources",
+	Usage:   "List tool sources",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -110,7 +110,7 @@ var toolsList = cli.Command{
 
 var toolsDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Tool Source",
+	Usage:   "Delete tool source",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

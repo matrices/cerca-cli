@@ -12,8 +12,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/stainless-sdks/cerca-cli/internal/autocomplete"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
+	"github.com/matrices/cerca-cli/internal/autocomplete"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	docs "github.com/urfave/cli-docs/v3"
 	"github.com/urfave/cli/v3"
 )

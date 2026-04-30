@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var schedulesCreate = cli.Command{
 	Name:    "create",
-	Usage:   "Schedules",
+	Usage:   "Create schedule",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -66,7 +66,7 @@ var schedulesCreate = cli.Command{
 
 var schedulesUpdate = cli.Command{
 	Name:    "update",
-	Usage:   "Schedule",
+	Usage:   "Update schedule",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -123,7 +123,7 @@ var schedulesUpdate = cli.Command{
 
 var schedulesList = cli.Command{
 	Name:    "list",
-	Usage:   "Schedules",
+	Usage:   "List schedules",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -138,7 +138,7 @@ var schedulesList = cli.Command{
 
 var schedulesDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Schedule",
+	Usage:   "Delete schedule",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -158,7 +158,7 @@ var schedulesDelete = cli.Command{
 
 var schedulesTrigger = cli.Command{
 	Name:    "trigger",
-	Usage:   "Trigger",
+	Usage:   "Trigger schedule",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

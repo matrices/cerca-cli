@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var connectionsCreate = cli.Command{
 	Name:    "create",
-	Usage:   "API Keys",
+	Usage:   "Create API key",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -49,7 +49,7 @@ var connectionsCreate = cli.Command{
 
 var connectionsList = cli.Command{
 	Name:    "list",
-	Usage:   "Connections",
+	Usage:   "List connections",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -84,7 +84,7 @@ var connectionsList = cli.Command{
 
 var connectionsDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Connection",
+	Usage:   "Delete connection",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -110,7 +110,7 @@ var connectionsDelete = cli.Command{
 
 var connectionsAttach = cli.Command{
 	Name:    "attach",
-	Usage:   "Connections",
+	Usage:   "Attach connection",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -134,7 +134,7 @@ var connectionsAttach = cli.Command{
 
 var connectionsDetach = cli.Command{
 	Name:    "detach",
-	Usage:   "Connection",
+	Usage:   "Detach connection",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -154,7 +154,7 @@ var connectionsDetach = cli.Command{
 
 var connectionsListForAgent = cli.Command{
 	Name:    "list-for-agent",
-	Usage:   "Connections",
+	Usage:   "List connections",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

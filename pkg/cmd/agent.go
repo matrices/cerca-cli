@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var agentsCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "create",
-	Usage:   "Agents",
+	Usage:   "Create agent",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[map[string]any]{
@@ -63,7 +63,7 @@ var agentsCreate = requestflag.WithInnerFlags(cli.Command{
 
 var agentsRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Agent",
+	Usage:   "Retrieve agent",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -78,7 +78,7 @@ var agentsRetrieve = cli.Command{
 
 var agentsUpdate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "update",
-	Usage:   "Agent",
+	Usage:   "Update agent",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -118,7 +118,7 @@ var agentsUpdate = requestflag.WithInnerFlags(cli.Command{
 
 var agentsList = cli.Command{
 	Name:    "list",
-	Usage:   "Agents",
+	Usage:   "List agents",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -152,7 +152,7 @@ var agentsList = cli.Command{
 
 var agentsDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Agent",
+	Usage:   "Delete agent",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -167,7 +167,7 @@ var agentsDelete = cli.Command{
 
 var agentsListTools = cli.Command{
 	Name:    "list-tools",
-	Usage:   "Tools",
+	Usage:   "List tools",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -182,7 +182,7 @@ var agentsListTools = cli.Command{
 
 var agentsRetrieveConfig = cli.Command{
 	Name:    "retrieve-config",
-	Usage:   "Config",
+	Usage:   "Retrieve config",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -197,7 +197,7 @@ var agentsRetrieveConfig = cli.Command{
 
 var agentsUpdateMetadata = cli.Command{
 	Name:    "update-metadata",
-	Usage:   "Metadata",
+	Usage:   "Update metadata",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
