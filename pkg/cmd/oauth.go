@@ -20,8 +20,9 @@ var oauthConnect = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "provider",
-			Required: true,
+			Name:      "provider",
+			Required:  true,
+			PathParam: "provider",
 		},
 		&requestflag.Flag[string]{
 			Name:     "return-origin",
@@ -56,8 +57,6 @@ func handleOAuthConnect(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.OAuthConnectParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -68,6 +67,8 @@ func handleOAuthConnect(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.OAuthConnectParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))

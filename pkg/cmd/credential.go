@@ -20,8 +20,9 @@ var credentialsList = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "scope",
-			Required: true,
+			Name:      "scope",
+			Required:  true,
+			PathParam: "scope",
 		},
 		&requestflag.Flag[string]{
 			Name:      "cursor",
@@ -48,12 +49,14 @@ var credentialsDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "scope",
-			Required: true,
+			Name:      "scope",
+			Required:  true,
+			PathParam: "scope",
 		},
 		&requestflag.Flag[string]{
-			Name:     "connection-id",
-			Required: true,
+			Name:      "connection-id",
+			Required:  true,
+			PathParam: "connectionId",
 		},
 	},
 	Action:          handleCredentialsDelete,
@@ -66,8 +69,9 @@ var credentialsCreateAPIKey = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "scope",
-			Required: true,
+			Name:      "scope",
+			Required:  true,
+			PathParam: "scope",
 		},
 		&requestflag.Flag[string]{
 			Name:     "api-key",
@@ -102,8 +106,6 @@ func handleCredentialsList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.CredentialListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -114,6 +116,8 @@ func handleCredentialsList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.CredentialListParams{}
 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
@@ -221,8 +225,6 @@ func handleCredentialsCreateAPIKey(ctx context.Context, cmd *cli.Command) error 
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.CredentialNewAPIKeyParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -233,6 +235,8 @@ func handleCredentialsCreateAPIKey(ctx context.Context, cmd *cli.Command) error 
 	if err != nil {
 		return err
 	}
+
+	params := cercago.CredentialNewAPIKeyParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
