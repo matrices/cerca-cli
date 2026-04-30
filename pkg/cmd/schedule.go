@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/matrices/cerca-cli/internal/apiquery"
-	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
+	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
+	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var schedulesCreate = cli.Command{
 	Name:    "create",
-	Usage:   "Perform create operation",
+	Usage:   "Schedules",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -25,14 +25,14 @@ var schedulesCreate = cli.Command{
 			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
+			Name:     "message",
+			Required: true,
+			BodyPath: "message",
+		},
+		&requestflag.Flag[string]{
 			Name:     "name",
 			Required: true,
 			BodyPath: "name",
-		},
-		&requestflag.Flag[string]{
-			Name:     "prompt",
-			Required: true,
-			BodyPath: "prompt",
 		},
 		&requestflag.Flag[string]{
 			Name:     "cron",
@@ -56,6 +56,7 @@ var schedulesCreate = cli.Command{
 		},
 		&requestflag.Flag[[]string]{
 			Name:     "tool",
+			Usage:    "Per-schedule tool subset. When the schedule starts a thread, these tools can only narrow the agent's effective tools.",
 			BodyPath: "tools",
 		},
 	},
@@ -65,7 +66,7 @@ var schedulesCreate = cli.Command{
 
 var schedulesUpdate = cli.Command{
 	Name:    "update",
-	Usage:   "Perform update operation",
+	Usage:   "Schedule",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -91,16 +92,16 @@ var schedulesUpdate = cli.Command{
 			BodyPath: "instructions",
 		},
 		&requestflag.Flag[string]{
+			Name:     "message",
+			BodyPath: "message",
+		},
+		&requestflag.Flag[string]{
 			Name:     "model",
 			BodyPath: "model",
 		},
 		&requestflag.Flag[string]{
 			Name:     "name",
 			BodyPath: "name",
-		},
-		&requestflag.Flag[string]{
-			Name:     "prompt",
-			BodyPath: "prompt",
 		},
 		&requestflag.Flag[any]{
 			Name:     "run-at",
@@ -112,6 +113,7 @@ var schedulesUpdate = cli.Command{
 		},
 		&requestflag.Flag[[]string]{
 			Name:     "tool",
+			Usage:    "Per-schedule tool subset. When updated, these tools can only narrow the agent's effective tools for future scheduled threads.",
 			BodyPath: "tools",
 		},
 	},
@@ -121,7 +123,7 @@ var schedulesUpdate = cli.Command{
 
 var schedulesList = cli.Command{
 	Name:    "list",
-	Usage:   "Perform list operation",
+	Usage:   "Schedules",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -136,7 +138,7 @@ var schedulesList = cli.Command{
 
 var schedulesDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Perform delete operation",
+	Usage:   "Schedule",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -156,7 +158,7 @@ var schedulesDelete = cli.Command{
 
 var schedulesTrigger = cli.Command{
 	Name:    "trigger",
-	Usage:   "Perform trigger operation",
+	Usage:   "Trigger",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

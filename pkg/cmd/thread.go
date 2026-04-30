@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/matrices/cerca-cli/internal/apiquery"
-	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
+	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
+	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var threadsCreate = cli.Command{
 	Name:    "create",
-	Usage:   "Perform create operation",
+	Usage:   "Threads",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -29,6 +29,10 @@ var threadsCreate = cli.Command{
 			BodyPath: "instructions",
 		},
 		&requestflag.Flag[string]{
+			Name:     "message",
+			BodyPath: "message",
+		},
+		&requestflag.Flag[string]{
 			Name:     "model",
 			BodyPath: "model",
 		},
@@ -39,11 +43,8 @@ var threadsCreate = cli.Command{
 		},
 		&requestflag.Flag[[]string]{
 			Name:     "tool",
+			Usage:    "Per-thread tool subset. Omit to inherit the agent's full effective tools; pass [] to run with no configurable tools. Provided entries can only narrow the agent's effective tools.",
 			BodyPath: "tools",
-		},
-		&requestflag.Flag[string]{
-			Name:     "user-message",
-			BodyPath: "userMessage",
 		},
 	},
 	Action:          handleThreadsCreate,
@@ -52,7 +53,7 @@ var threadsCreate = cli.Command{
 
 var threadsRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Perform retrieve operation",
+	Usage:   "Thread",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -66,16 +67,6 @@ var threadsRetrieve = cli.Command{
 			PathParam: "threadId",
 		},
 		&requestflag.Flag[string]{
-			Name:      "after-seq",
-			Usage:     "Return messages newer than this sequence number. Mutually exclusive with `beforeSeq`.",
-			QueryPath: "afterSeq",
-		},
-		&requestflag.Flag[string]{
-			Name:      "before-seq",
-			Usage:     "Return messages older than this sequence number. Mutually exclusive with `afterSeq`.",
-			QueryPath: "beforeSeq",
-		},
-		&requestflag.Flag[string]{
 			Name:      "debug",
 			Usage:     "When true, includes debug-only compiled context fields.",
 			QueryPath: "debug",
@@ -85,11 +76,6 @@ var threadsRetrieve = cli.Command{
 			Usage:     "When true, includes message content in the thread detail.",
 			QueryPath: "includeMessages",
 		},
-		&requestflag.Flag[string]{
-			Name:      "message-limit",
-			Usage:     "Maximum number of messages to include. Set to 0 to return metadata without messages.",
-			QueryPath: "messageLimit",
-		},
 	},
 	Action:          handleThreadsRetrieve,
 	HideHelpCommand: true,
@@ -97,7 +83,7 @@ var threadsRetrieve = cli.Command{
 
 var threadsList = cli.Command{
 	Name:    "list",
-	Usage:   "Perform list operation",
+	Usage:   "Threads",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -196,7 +182,7 @@ var threadsCompact = cli.Command{
 
 var threadsStartTurn = cli.Command{
 	Name:    "start-turn",
-	Usage:   "Perform start-turn operation",
+	Usage:   "Turns",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -210,9 +196,9 @@ var threadsStartTurn = cli.Command{
 			PathParam: "threadId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "user-message",
+			Name:     "message",
 			Required: true,
-			BodyPath: "userMessage",
+			BodyPath: "message",
 		},
 		&requestflag.Flag[string]{
 			Name:     "model",
@@ -220,6 +206,7 @@ var threadsStartTurn = cli.Command{
 		},
 		&requestflag.Flag[[]string]{
 			Name:     "tool",
+			Usage:    "Per-turn tool subset. Omit to inherit the thread's current tools; pass [] to run this turn with no configurable tools. Provided entries can only narrow the agent/thread effective tools.",
 			BodyPath: "tools",
 		},
 	},

@@ -5,8 +5,8 @@ package cmd
 import (
 	"testing"
 
-	"github.com/matrices/cerca-cli/internal/mocktest"
-	"github.com/matrices/cerca-cli/internal/requestflag"
+	"github.com/stainless-sdks/cerca-cli/internal/mocktest"
+	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 )
 
 func TestAgentsCreate(t *testing.T) {
@@ -146,6 +146,17 @@ func TestAgentsDelete(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"agents", "delete",
+			"--agent-id", "agent_abc123",
+		)
+	})
+}
+
+func TestAgentsListTools(t *testing.T) {
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"agents", "list-tools",
 			"--agent-id", "agent_abc123",
 		)
 	})

@@ -5,7 +5,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/matrices/cerca-cli/internal/mocktest"
+	"github.com/stainless-sdks/cerca-cli/internal/mocktest"
 )
 
 func TestOAuthConnect(t *testing.T) {
@@ -15,8 +15,8 @@ func TestOAuthConnect(t *testing.T) {
 			"--api-key", "string",
 			"oauth", "connect",
 			"--provider", "google",
+			"--owner", "{type: organization}",
 			"--return-origin", "https://app.example.com",
-			"--scope", "env:org_abc123:fleet_abc123",
 			"--scope", "email",
 			"--scope", "profile",
 		)
@@ -25,8 +25,9 @@ func TestOAuthConnect(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
+			"owner:\n" +
+			"  type: organization\n" +
 			"returnOrigin: https://app.example.com\n" +
-			"scope: env:org_abc123:fleet_abc123\n" +
 			"scopes:\n" +
 			"  - email\n" +
 			"  - profile\n")

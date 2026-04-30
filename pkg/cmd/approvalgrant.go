@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/matrices/cerca-cli/internal/apiquery"
-	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
+	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
+	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var approvalGrantsList = cli.Command{
 	Name:    "list",
-	Usage:   "Perform list operation",
+	Usage:   "Approval Grants",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -45,7 +45,7 @@ var approvalGrantsList = cli.Command{
 
 var approvalGrantsDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Perform delete operation",
+	Usage:   "Approval Grant",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -65,7 +65,7 @@ var approvalGrantsDelete = cli.Command{
 
 var approvalGrantsDeleteForThread = cli.Command{
 	Name:    "delete-for-thread",
-	Usage:   "Perform delete-for-thread operation",
+	Usage:   "Approval Grant",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -90,7 +90,7 @@ var approvalGrantsDeleteForThread = cli.Command{
 
 var approvalGrantsListForThread = cli.Command{
 	Name:    "list-for-thread",
-	Usage:   "Perform list-for-thread operation",
+	Usage:   "Approval Grants",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

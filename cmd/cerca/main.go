@@ -10,8 +10,8 @@ import (
 	"os"
 	"slices"
 
-	"github.com/matrices/cerca-cli/pkg/cmd"
 	"github.com/matrices/cerca-go"
+	"github.com/stainless-sdks/cerca-cli/pkg/cmd"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )

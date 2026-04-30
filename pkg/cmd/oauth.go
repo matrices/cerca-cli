@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/matrices/cerca-cli/internal/apiquery"
-	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
+	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
+	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var oauthConnect = cli.Command{
 	Name:    "connect",
-	Usage:   "Perform connect operation",
+	Usage:   "Connect",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -24,17 +24,17 @@ var oauthConnect = cli.Command{
 			Required:  true,
 			PathParam: "provider",
 		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "owner",
+			Usage:    "Public owner for a reusable connection. Organization owners use the authenticated organization; fleet owners add a fleetId.",
+			Required: true,
+			BodyPath: "owner",
+		},
 		&requestflag.Flag[string]{
 			Name:     "return-origin",
 			Usage:    "HTTP(S) origin that receives the OAuth completion message.",
 			Required: true,
 			BodyPath: "returnOrigin",
-		},
-		&requestflag.Flag[string]{
-			Name:     "scope",
-			Usage:    "Credential connection scope to attach the OAuth account to.",
-			Required: true,
-			BodyPath: "scope",
 		},
 		&requestflag.Flag[[]string]{
 			Name:     "scope",

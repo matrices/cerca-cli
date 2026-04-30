@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/matrices/cerca-cli/internal/apiquery"
-	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
+	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
+	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var contextRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Perform retrieve operation",
+	Usage:   "Entry",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -37,7 +37,7 @@ var contextRetrieve = cli.Command{
 
 var contextList = cli.Command{
 	Name:    "list",
-	Usage:   "Perform list operation",
+	Usage:   "Context",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -71,7 +71,7 @@ var contextList = cli.Command{
 
 var contextDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Perform delete operation",
+	Usage:   "Entry",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -92,7 +92,7 @@ var contextDelete = cli.Command{
 
 var contextSearch = cli.Command{
 	Name:    "search",
-	Usage:   "Perform search operation",
+	Usage:   "Search",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -132,7 +132,7 @@ var contextSearch = cli.Command{
 
 var contextWrite = cli.Command{
 	Name:    "write",
-	Usage:   "Perform write operation",
+	Usage:   "Entry",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

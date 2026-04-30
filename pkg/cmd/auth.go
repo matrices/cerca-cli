@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/matrices/cerca-cli/internal/apiquery"
-	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
+	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
+	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var authContext = cli.Command{
 	Name:            "context",
-	Usage:           "Perform context operation",
+	Usage:           "Context",
 	Suggest:         true,
 	Flags:           []cli.Flag{},
 	Action:          handleAuthContext,
@@ -25,7 +25,7 @@ var authContext = cli.Command{
 
 var authListFleets = cli.Command{
 	Name:    "list-fleets",
-	Usage:   "Perform list-fleets operation",
+	Usage:   "Fleets",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{

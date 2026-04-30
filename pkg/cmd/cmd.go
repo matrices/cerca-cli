@@ -12,8 +12,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/matrices/cerca-cli/internal/autocomplete"
-	"github.com/matrices/cerca-cli/internal/requestflag"
+	"github.com/stainless-sdks/cerca-cli/internal/autocomplete"
+	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	docs "github.com/urfave/cli-docs/v3"
 	"github.com/urfave/cli/v3"
 )
@@ -102,26 +102,28 @@ func init() {
 				},
 			},
 			{
-				Name:     "credentials",
+				Name:     "connections",
 				Category: "API RESOURCE",
 				Suggest:  true,
 				Commands: []*cli.Command{
-					&credentialsList,
-					&credentialsDelete,
-					&credentialsCreateAPIKey,
+					&connectionsCreate,
+					&connectionsList,
+					&connectionsDelete,
+					&connectionsAttach,
+					&connectionsDetach,
+					&connectionsListForAgent,
 				},
 			},
 			{
-				Name:     "tool-sources",
+				Name:     "tools",
 				Category: "API RESOURCE",
 				Suggest:  true,
 				Commands: []*cli.Command{
-					&toolSourcesCreate,
-					&toolSourcesRetrieve,
-					&toolSourcesUpdate,
-					&toolSourcesList,
-					&toolSourcesDelete,
-					&toolSourcesListForAgent,
+					&toolsCreate,
+					&toolsRetrieve,
+					&toolsUpdate,
+					&toolsList,
+					&toolsDelete,
 				},
 			},
 			{
@@ -161,6 +163,7 @@ func init() {
 					&agentsUpdate,
 					&agentsList,
 					&agentsDelete,
+					&agentsListTools,
 					&agentsRetrieveConfig,
 					&agentsUpdateMetadata,
 				},
@@ -193,16 +196,6 @@ func init() {
 				},
 			},
 			{
-				Name:     "connections",
-				Category: "API RESOURCE",
-				Suggest:  true,
-				Commands: []*cli.Command{
-					&connectionsList,
-					&connectionsAttach,
-					&connectionsDetach,
-				},
-			},
-			{
 				Name:     "schedules",
 				Category: "API RESOURCE",
 				Suggest:  true,
@@ -215,12 +208,12 @@ func init() {
 				},
 			},
 			{
-				Name:     "approvals",
+				Name:     "approval-requests",
 				Category: "API RESOURCE",
 				Suggest:  true,
 				Commands: []*cli.Command{
-					&approvalsList,
-					&approvalsResolve,
+					&approvalRequestsList,
+					&approvalRequestsResolve,
 				},
 			},
 			{
@@ -235,15 +228,6 @@ func init() {
 				},
 			},
 			{
-				Name:     "logs",
-				Category: "API RESOURCE",
-				Suggest:  true,
-				Commands: []*cli.Command{
-					&logsListForAgent,
-					&logsListForThread,
-				},
-			},
-			{
 				Name:     "sandbox",
 				Category: "API RESOURCE",
 				Suggest:  true,
@@ -251,14 +235,6 @@ func init() {
 					&sandboxExec,
 					&sandboxRead,
 					&sandboxWrite,
-				},
-			},
-			{
-				Name:     "tools",
-				Category: "API RESOURCE",
-				Suggest:  true,
-				Commands: []*cli.Command{
-					&toolsListForAgent,
 				},
 			},
 			{

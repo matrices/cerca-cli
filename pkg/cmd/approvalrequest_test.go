@@ -5,15 +5,15 @@ package cmd
 import (
 	"testing"
 
-	"github.com/matrices/cerca-cli/internal/mocktest"
+	"github.com/stainless-sdks/cerca-cli/internal/mocktest"
 )
 
-func TestApprovalsList(t *testing.T) {
+func TestApprovalRequestsList(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"--api-key", "string",
-			"approvals", "list",
+			"approval-requests", "list",
 			"--max-items", "10",
 			"--agent-id", "agent_abc123",
 			"--cursor", "cursor_abc123",
@@ -23,12 +23,12 @@ func TestApprovalsList(t *testing.T) {
 	})
 }
 
-func TestApprovalsResolve(t *testing.T) {
+func TestApprovalRequestsResolve(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"--api-key", "string",
-			"approvals", "resolve",
+			"approval-requests", "resolve",
 			"--agent-id", "agent_abc123",
 			"--thread-id", "thread_abc123",
 			"--approval-id", "approval_abc123",
@@ -45,7 +45,7 @@ func TestApprovalsResolve(t *testing.T) {
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
-			"approvals", "resolve",
+			"approval-requests", "resolve",
 			"--agent-id", "agent_abc123",
 			"--thread-id", "thread_abc123",
 			"--approval-id", "approval_abc123",

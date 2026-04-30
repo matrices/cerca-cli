@@ -6,17 +6,17 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/matrices/cerca-cli/internal/apiquery"
-	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
+	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
+	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
-var logsListForAgent = cli.Command{
-	Name:    "list-for-agent",
-	Usage:   "Perform list-for-agent operation",
+var approvalRequestsList = cli.Command{
+	Name:    "list",
+	Usage:   "Approvals",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -34,18 +34,23 @@ var logsListForAgent = cli.Command{
 			Usage:     "Maximum number of items to return. Defaults to 20 and preserves parseInt semantics.",
 			QueryPath: "limit",
 		},
+		&requestflag.Flag[string]{
+			Name:      "thread-id",
+			Usage:     "Optional thread id filter.",
+			QueryPath: "threadId",
+		},
 		&requestflag.Flag[int64]{
 			Name:  "max-items",
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
 		},
 	},
-	Action:          handleLogsListForAgent,
+	Action:          handleApprovalRequestsList,
 	HideHelpCommand: true,
 }
 
-var logsListForThread = cli.Command{
-	Name:    "list-for-thread",
-	Usage:   "Perform list-for-thread operation",
+var approvalRequestsResolve = cli.Command{
+	Name:    "resolve",
+	Usage:   "Approval",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -59,25 +64,27 @@ var logsListForThread = cli.Command{
 			PathParam: "threadId",
 		},
 		&requestflag.Flag[string]{
-			Name:      "cursor",
-			Usage:     "Opaque pagination cursor returned by a previous request.",
-			QueryPath: "cursor",
+			Name:      "approval-id",
+			Required:  true,
+			PathParam: "approvalId",
 		},
 		&requestflag.Flag[string]{
-			Name:      "limit",
-			Usage:     "Maximum number of items to return. Defaults to 20 and preserves parseInt semantics.",
-			QueryPath: "limit",
+			Name:     "decision",
+			Usage:    `Allowed values: "approve", "deny", "cancel".`,
+			Required: true,
+			BodyPath: "decision",
 		},
-		&requestflag.Flag[int64]{
-			Name:  "max-items",
-			Usage: "The maximum number of items to return (use -1 for unlimited).",
+		&requestflag.Flag[string]{
+			Name:     "grant",
+			Usage:    `Allowed values: "thread", "agent".`,
+			BodyPath: "grant",
 		},
 	},
-	Action:          handleLogsListForThread,
+	Action:          handleApprovalRequestsResolve,
 	HideHelpCommand: true,
 }
 
-func handleLogsListForAgent(ctx context.Context, cmd *cli.Command) error {
+func handleApprovalRequestsList(ctx context.Context, cmd *cli.Command) error {
 	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("agent-id") && len(unusedArgs) > 0 {
@@ -99,7 +106,7 @@ func handleLogsListForAgent(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	params := cercago.LogListForAgentParams{}
+	params := cercago.ApprovalRequestListParams{}
 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
@@ -107,7 +114,7 @@ func handleLogsListForAgent(ctx context.Context, cmd *cli.Command) error {
 	if format == "raw" {
 		var res []byte
 		options = append(options, option.WithResponseBodyInto(&res))
-		_, err = client.Logs.ListForAgent(
+		_, err = client.ApprovalRequests.List(
 			ctx,
 			cmd.Value("agent-id").(string),
 			params,
@@ -121,11 +128,11 @@ func handleLogsListForAgent(ctx context.Context, cmd *cli.Command) error {
 			ExplicitFormat: explicitFormat,
 			Format:         format,
 			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "logs list-for-agent",
+			Title:          "approval-requests list",
 			Transform:      transform,
 		})
 	} else {
-		iter := client.Logs.ListForAgentAutoPaging(
+		iter := client.ApprovalRequests.ListAutoPaging(
 			ctx,
 			cmd.Value("agent-id").(string),
 			params,
@@ -139,13 +146,13 @@ func handleLogsListForAgent(ctx context.Context, cmd *cli.Command) error {
 			ExplicitFormat: explicitFormat,
 			Format:         format,
 			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "logs list-for-agent",
+			Title:          "approval-requests list",
 			Transform:      transform,
 		})
 	}
 }
 
-func handleLogsListForThread(ctx context.Context, cmd *cli.Command) error {
+func handleApprovalRequestsResolve(ctx context.Context, cmd *cli.Command) error {
 	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("agent-id") && len(unusedArgs) > 0 {
@@ -156,6 +163,10 @@ func handleLogsListForThread(ctx context.Context, cmd *cli.Command) error {
 		cmd.Set("thread-id", unusedArgs[0])
 		unusedArgs = unusedArgs[1:]
 	}
+	if !cmd.IsSet("approval-id") && len(unusedArgs) > 0 {
+		cmd.Set("approval-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
@@ -164,57 +175,38 @@ func handleLogsListForThread(ctx context.Context, cmd *cli.Command) error {
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
 		apiquery.ArrayQueryFormatComma,
-		EmptyBody,
+		ApplicationJSON,
 		false,
 	)
 	if err != nil {
 		return err
 	}
 
-	params := cercago.LogListForThreadParams{}
+	params := cercago.ApprovalRequestResolveParams{}
 
+	var res []byte
+	options = append(options, option.WithResponseBodyInto(&res))
+	_, err = client.ApprovalRequests.Resolve(
+		ctx,
+		cmd.Value("agent-id").(string),
+		cmd.Value("thread-id").(string),
+		cmd.Value("approval-id").(string),
+		params,
+		options...,
+	)
+	if err != nil {
+		return err
+	}
+
+	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	if format == "raw" {
-		var res []byte
-		options = append(options, option.WithResponseBodyInto(&res))
-		_, err = client.Logs.ListForThread(
-			ctx,
-			cmd.Value("agent-id").(string),
-			cmd.Value("thread-id").(string),
-			params,
-			options...,
-		)
-		if err != nil {
-			return err
-		}
-		obj := gjson.ParseBytes(res)
-		return ShowJSON(obj, ShowJSONOpts{
-			ExplicitFormat: explicitFormat,
-			Format:         format,
-			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "logs list-for-thread",
-			Transform:      transform,
-		})
-	} else {
-		iter := client.Logs.ListForThreadAutoPaging(
-			ctx,
-			cmd.Value("agent-id").(string),
-			cmd.Value("thread-id").(string),
-			params,
-			options...,
-		)
-		maxItems := int64(-1)
-		if cmd.IsSet("max-items") {
-			maxItems = cmd.Value("max-items").(int64)
-		}
-		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
-			ExplicitFormat: explicitFormat,
-			Format:         format,
-			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "logs list-for-thread",
-			Transform:      transform,
-		})
-	}
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "approval-requests resolve",
+		Transform:      transform,
+	})
 }

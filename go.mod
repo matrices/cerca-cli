@@ -1,4 +1,4 @@
-module github.com/matrices/cerca-cli
+module github.com/stainless-sdks/cerca-cli
 
 go 1.25
 
