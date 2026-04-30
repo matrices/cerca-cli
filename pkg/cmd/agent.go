@@ -66,8 +66,9 @@ var agentsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 	},
 	Action:          handleAgentsRetrieve,
@@ -80,8 +81,9 @@ var agentsUpdate = requestflag.WithInnerFlags(cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "configuration",
@@ -152,8 +154,9 @@ var agentsDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 	},
 	Action:          handleAgentsDelete,
@@ -166,8 +169,9 @@ var agentsRetrieveConfig = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 	},
 	Action:          handleAgentsRetrieveConfig,
@@ -180,8 +184,9 @@ var agentsUpdateMetadata = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
@@ -202,8 +207,6 @@ func handleAgentsCreate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.AgentNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -214,6 +217,8 @@ func handleAgentsCreate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.AgentNewParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -288,8 +293,6 @@ func handleAgentsUpdate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.AgentUpdateParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -300,6 +303,8 @@ func handleAgentsUpdate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.AgentUpdateParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -334,8 +339,6 @@ func handleAgentsList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.AgentListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -346,6 +349,8 @@ func handleAgentsList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.AgentListParams{}
 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
@@ -476,8 +481,6 @@ func handleAgentsUpdateMetadata(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.AgentUpdateMetadataParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -488,6 +491,8 @@ func handleAgentsUpdateMetadata(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.AgentUpdateMetadataParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))

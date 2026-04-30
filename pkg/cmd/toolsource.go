@@ -20,8 +20,9 @@ var toolSourcesCreate = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "source",
@@ -39,12 +40,14 @@ var toolSourcesRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "source-id",
-			Required: true,
+			Name:      "source-id",
+			Required:  true,
+			PathParam: "sourceId",
 		},
 	},
 	Action:          handleToolSourcesRetrieve,
@@ -57,12 +60,14 @@ var toolSourcesUpdate = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "source-id",
-			Required: true,
+			Name:      "source-id",
+			Required:  true,
+			PathParam: "sourceId",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "source",
@@ -80,8 +85,9 @@ var toolSourcesList = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
 		},
 		&requestflag.Flag[string]{
 			Name:      "cursor",
@@ -108,12 +114,14 @@ var toolSourcesDelete = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "source-id",
-			Required: true,
+			Name:      "source-id",
+			Required:  true,
+			PathParam: "sourceId",
 		},
 	},
 	Action:          handleToolSourcesDelete,
@@ -126,8 +134,9 @@ var toolSourcesListForAgent = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 	},
 	Action:          handleToolSourcesListForAgent,
@@ -145,8 +154,6 @@ func handleToolSourcesCreate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.ToolSourceNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -157,6 +164,8 @@ func handleToolSourcesCreate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.ToolSourceNewParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -249,8 +258,6 @@ func handleToolSourcesUpdate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.ToolSourceUpdateParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -261,6 +268,8 @@ func handleToolSourcesUpdate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.ToolSourceUpdateParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -299,8 +308,6 @@ func handleToolSourcesList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.ToolSourceListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -311,6 +318,8 @@ func handleToolSourcesList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.ToolSourceListParams{}
 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")

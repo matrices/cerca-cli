@@ -20,8 +20,9 @@ var connectionsList = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 	},
 	Action:          handleConnectionsList,
@@ -34,8 +35,9 @@ var connectionsAttach = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
 			Name:     "connection-id",
@@ -57,12 +59,14 @@ var connectionsDetach = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "connection-id",
-			Required: true,
+			Name:      "connection-id",
+			Required:  true,
+			PathParam: "connectionId",
 		},
 	},
 	Action:          handleConnectionsDetach,
@@ -122,8 +126,6 @@ func handleConnectionsAttach(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.ConnectionAttachParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -134,6 +136,8 @@ func handleConnectionsAttach(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.ConnectionAttachParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))

@@ -20,8 +20,9 @@ var threadsCreate = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
 			Name:     "instructions",
@@ -55,12 +56,14 @@ var threadsRetrieve = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "thread-id",
-			Required: true,
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
 		},
 		&requestflag.Flag[string]{
 			Name:      "after-seq",
@@ -98,8 +101,9 @@ var threadsList = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
 			Name:      "cursor",
@@ -136,12 +140,14 @@ var threadsCancel = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "thread-id",
-			Required: true,
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
 		},
 	},
 	Action:          handleThreadsCancel,
@@ -154,12 +160,14 @@ var threadsClose = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "thread-id",
-			Required: true,
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
 		},
 	},
 	Action:          handleThreadsClose,
@@ -172,12 +180,14 @@ var threadsCompact = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "thread-id",
-			Required: true,
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
 		},
 	},
 	Action:          handleThreadsCompact,
@@ -190,12 +200,14 @@ var threadsStartTurn = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "thread-id",
-			Required: true,
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
 		},
 		&requestflag.Flag[string]{
 			Name:     "user-message",
@@ -221,12 +233,14 @@ var threadsSteer = cli.Command{
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "thread-id",
-			Required: true,
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
 		},
 		&requestflag.Flag[string]{
 			Name:     "message",
@@ -249,8 +263,6 @@ func handleThreadsCreate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.ThreadNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -261,6 +273,8 @@ func handleThreadsCreate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.ThreadNewParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -302,8 +316,6 @@ func handleThreadsRetrieve(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.ThreadGetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -314,6 +326,8 @@ func handleThreadsRetrieve(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.ThreadGetParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -352,8 +366,6 @@ func handleThreadsList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.ThreadListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -364,6 +376,8 @@ func handleThreadsList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.ThreadListParams{}
 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
@@ -577,8 +591,6 @@ func handleThreadsStartTurn(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.ThreadStartTurnParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -589,6 +601,8 @@ func handleThreadsStartTurn(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.ThreadStartTurnParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -631,8 +645,6 @@ func handleThreadsSteer(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.ThreadSteerParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -643,6 +655,8 @@ func handleThreadsSteer(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.ThreadSteerParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
