@@ -14,7 +14,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-var toolsCreate = cli.Command{
+var toolsCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "create",
 	Usage:   "Create tool",
 	Suggest: true,
@@ -25,14 +25,106 @@ var toolsCreate = cli.Command{
 			PathParam: "fleetId",
 		},
 		&requestflag.Flag[map[string]any]{
+			Name:     "auth",
+			Usage:    "Tool source authentication configuration. The `kind` field selects one of `none`, `api_key`, `oauth_exchange`, or `oauth_connection`.",
+			Required: true,
+			BodyPath: "auth",
+		},
+		&requestflag.Flag[string]{
+			Name:     "namespace",
+			Required: true,
+			BodyPath: "namespace",
+		},
+		&requestflag.Flag[[]map[string]any]{
 			Name:     "tool",
 			Required: true,
-			BodyRoot: true,
+			BodyPath: "tools",
+		},
+		&requestflag.Flag[string]{
+			Name:     "type",
+			Usage:    `Allowed values: "http".`,
+			Default:  "http",
+			Const:    true,
+			BodyPath: "type",
+		},
+		&requestflag.Flag[string]{
+			Name:     "approval",
+			Usage:    `Allowed values: "always", "never".`,
+			BodyPath: "approval",
+		},
+		&requestflag.Flag[bool]{
+			Name:     "enabled",
+			BodyPath: "enabled",
+		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "execution",
+			Usage:    "HTTP tool execution retry and timeout policy.",
+			BodyPath: "execution",
+		},
+		&requestflag.Flag[string]{
+			Name:     "url",
+			Required: true,
+			BodyPath: "url",
 		},
 	},
 	Action:          handleToolsCreate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"tool": {
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.description",
+			InnerField: "description",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.endpoint",
+			Usage:      "HTTP endpoint invoked when the tool is called.",
+			InnerField: "endpoint",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.input-schema",
+			Usage:      "JSON Schema object describing tool input parameters.",
+			InnerField: "inputSchema",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.name",
+			InnerField: "name",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.approval",
+			Usage:      `Allowed values: "always", "never".`,
+			InnerField: "approval",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.execution",
+			Usage:      "HTTP tool execution retry and timeout policy.",
+			InnerField: "execution",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.response",
+			Usage:      "How the HTTP response should be normalized for the agent.",
+			InnerField: "response",
+		},
+	},
+	"execution": {
+		&requestflag.InnerFlag[string]{
+			Name:       "execution.idempotency-key-header",
+			InnerField: "idempotencyKeyHeader",
+		},
+		&requestflag.InnerFlag[float64]{
+			Name:       "execution.max-attempts",
+			InnerField: "maxAttempts",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "execution.retry-mode",
+			Usage:      `Allowed values: "disabled", "safe_only", "enabled".`,
+			InnerField: "retryMode",
+		},
+		&requestflag.InnerFlag[float64]{
+			Name:       "execution.timeout-ms",
+			InnerField: "timeoutMs",
+		},
+	},
+})
 
 var toolsRetrieve = cli.Command{
 	Name:    "retrieve",
@@ -54,7 +146,7 @@ var toolsRetrieve = cli.Command{
 	HideHelpCommand: true,
 }
 
-var toolsUpdate = cli.Command{
+var toolsUpdate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "update",
 	Usage:   "Update tool source",
 	Suggest: true,
@@ -70,14 +162,106 @@ var toolsUpdate = cli.Command{
 			PathParam: "sourceId",
 		},
 		&requestflag.Flag[map[string]any]{
+			Name:     "auth",
+			Usage:    "Tool source authentication configuration. The `kind` field selects one of `none`, `api_key`, `oauth_exchange`, or `oauth_connection`.",
+			Required: true,
+			BodyPath: "auth",
+		},
+		&requestflag.Flag[string]{
+			Name:     "namespace",
+			Required: true,
+			BodyPath: "namespace",
+		},
+		&requestflag.Flag[[]map[string]any]{
 			Name:     "tool",
 			Required: true,
-			BodyRoot: true,
+			BodyPath: "tools",
+		},
+		&requestflag.Flag[string]{
+			Name:     "type",
+			Usage:    `Allowed values: "http".`,
+			Default:  "http",
+			Const:    true,
+			BodyPath: "type",
+		},
+		&requestflag.Flag[string]{
+			Name:     "approval",
+			Usage:    `Allowed values: "always", "never".`,
+			BodyPath: "approval",
+		},
+		&requestflag.Flag[bool]{
+			Name:     "enabled",
+			BodyPath: "enabled",
+		},
+		&requestflag.Flag[map[string]any]{
+			Name:     "execution",
+			Usage:    "HTTP tool execution retry and timeout policy.",
+			BodyPath: "execution",
+		},
+		&requestflag.Flag[string]{
+			Name:     "url",
+			Required: true,
+			BodyPath: "url",
 		},
 	},
 	Action:          handleToolsUpdate,
 	HideHelpCommand: true,
-}
+}, map[string][]requestflag.HasOuterFlag{
+	"tool": {
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.description",
+			InnerField: "description",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.endpoint",
+			Usage:      "HTTP endpoint invoked when the tool is called.",
+			InnerField: "endpoint",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.input-schema",
+			Usage:      "JSON Schema object describing tool input parameters.",
+			InnerField: "inputSchema",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.name",
+			InnerField: "name",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "tool.approval",
+			Usage:      `Allowed values: "always", "never".`,
+			InnerField: "approval",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.execution",
+			Usage:      "HTTP tool execution retry and timeout policy.",
+			InnerField: "execution",
+		},
+		&requestflag.InnerFlag[map[string]any]{
+			Name:       "tool.response",
+			Usage:      "How the HTTP response should be normalized for the agent.",
+			InnerField: "response",
+		},
+	},
+	"execution": {
+		&requestflag.InnerFlag[string]{
+			Name:       "execution.idempotency-key-header",
+			InnerField: "idempotencyKeyHeader",
+		},
+		&requestflag.InnerFlag[float64]{
+			Name:       "execution.max-attempts",
+			InnerField: "maxAttempts",
+		},
+		&requestflag.InnerFlag[string]{
+			Name:       "execution.retry-mode",
+			Usage:      `Allowed values: "disabled", "safe_only", "enabled".`,
+			InnerField: "retryMode",
+		},
+		&requestflag.InnerFlag[float64]{
+			Name:       "execution.timeout-ms",
+			InnerField: "timeoutMs",
+		},
+	},
+})
 
 var toolsList = cli.Command{
 	Name:    "list",

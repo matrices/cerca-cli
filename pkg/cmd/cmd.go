@@ -148,9 +148,10 @@ func init() {
 					&eventsListForAgent,
 					&eventsListForFleet,
 					&eventsListForThread,
-					&eventsSubscribeAgent,
-					&eventsSubscribeFleet,
-					&eventsSubscribeThread,
+					&eventsStreamForAgent,
+					&eventsStreamForFleet,
+					&eventsStreamForThread,
+					&eventsStreamForThreadEvents,
 				},
 			},
 			{
