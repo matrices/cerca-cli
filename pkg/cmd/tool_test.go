@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/matrices/cerca-cli/internal/mocktest"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 )
 
 func TestToolsCreate(t *testing.T) {
@@ -15,7 +16,44 @@ func TestToolsCreate(t *testing.T) {
 			"--api-key", "string",
 			"tools", "create",
 			"--fleet-id", "fleet_abc123",
-			"--tool", "{auth: {kind: none}, namespace: docs, tools: [{description: Search documents, endpoint: {method: GET, url: https://docs.example.com/search, body: json_params, headers: {foo: string}, path: {foo: params.query}, query: {foo: params.query}}, inputSchema: {type: bar}, name: search, approval: always, execution: {idempotencyKeyHeader: idempotencyKeyHeader, maxAttempts: 3, retryMode: safe_only, timeoutMs: 10000}, response: {mode: auto}}], type: http, approval: always, enabled: true, execution: {idempotencyKeyHeader: idempotencyKeyHeader, maxAttempts: 3, retryMode: safe_only, timeoutMs: 10000}}",
+			"--auth", "{kind: none}",
+			"--namespace", "docs",
+			"--tool", "{description: Search documents, endpoint: {method: GET, url: https://docs.example.com/search, body: json_params, headers: {foo: string}, path: {foo: params.query}, query: {foo: params.query}}, inputSchema: {type: bar}, name: search, approval: always, execution: {idempotencyKeyHeader: idempotencyKeyHeader, maxAttempts: 3, retryMode: safe_only, timeoutMs: 10000}, response: {mode: auto}}",
+			"--type", "http",
+			"--approval", "always",
+			"--enabled=true",
+			"--execution", "{idempotencyKeyHeader: idempotencyKeyHeader, maxAttempts: 3, retryMode: safe_only, timeoutMs: 10000}",
+			"--url", "https://mcp.example.com",
+		)
+	})
+
+	t.Run("inner flags", func(t *testing.T) {
+		// Check that inner flags have been set up correctly
+		requestflag.CheckInnerFlags(toolsCreate)
+
+		// Alternative argument passing style using inner flags
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"tools", "create",
+			"--fleet-id", "fleet_abc123",
+			"--auth", "{kind: none}",
+			"--namespace", "docs",
+			"--tool.description", "Search documents",
+			"--tool.endpoint", "{method: GET, url: https://docs.example.com/search, body: json_params, headers: {foo: string}, path: {foo: params.query}, query: {foo: params.query}}",
+			"--tool.input-schema", "{type: bar}",
+			"--tool.name", "search",
+			"--tool.approval", "always",
+			"--tool.execution", "{idempotencyKeyHeader: idempotencyKeyHeader, maxAttempts: 3, retryMode: safe_only, timeoutMs: 10000}",
+			"--tool.response", "{mode: auto}",
+			"--type", "http",
+			"--approval", "always",
+			"--enabled=true",
+			"--execution.idempotency-key-header", "idempotencyKeyHeader",
+			"--execution.max-attempts", "3",
+			"--execution.retry-mode", "safe_only",
+			"--execution.timeout-ms", "10000",
+			"--url", "https://mcp.example.com",
 		)
 	})
 
@@ -55,7 +93,8 @@ func TestToolsCreate(t *testing.T) {
 			"  idempotencyKeyHeader: idempotencyKeyHeader\n" +
 			"  maxAttempts: 3\n" +
 			"  retryMode: safe_only\n" +
-			"  timeoutMs: 10000\n")
+			"  timeoutMs: 10000\n" +
+			"url: https://mcp.example.com\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
@@ -85,7 +124,45 @@ func TestToolsUpdate(t *testing.T) {
 			"tools", "update",
 			"--fleet-id", "fleet_abc123",
 			"--source-id", "toolsrc_abc123",
-			"--tool", "{auth: {kind: none}, namespace: docs, tools: [{description: Search documents, endpoint: {method: GET, url: https://docs.example.com/search, body: json_params, headers: {foo: string}, path: {foo: params.query}, query: {foo: params.query}}, inputSchema: {type: bar}, name: search, approval: always, execution: {idempotencyKeyHeader: idempotencyKeyHeader, maxAttempts: 3, retryMode: safe_only, timeoutMs: 10000}, response: {mode: auto}}], type: http, approval: always, enabled: true, execution: {idempotencyKeyHeader: idempotencyKeyHeader, maxAttempts: 3, retryMode: safe_only, timeoutMs: 10000}}",
+			"--auth", "{kind: none}",
+			"--namespace", "docs",
+			"--tool", "{description: Search documents, endpoint: {method: GET, url: https://docs.example.com/search, body: json_params, headers: {foo: string}, path: {foo: params.query}, query: {foo: params.query}}, inputSchema: {type: bar}, name: search, approval: always, execution: {idempotencyKeyHeader: idempotencyKeyHeader, maxAttempts: 3, retryMode: safe_only, timeoutMs: 10000}, response: {mode: auto}}",
+			"--type", "http",
+			"--approval", "always",
+			"--enabled=true",
+			"--execution", "{idempotencyKeyHeader: idempotencyKeyHeader, maxAttempts: 3, retryMode: safe_only, timeoutMs: 10000}",
+			"--url", "https://mcp.example.com",
+		)
+	})
+
+	t.Run("inner flags", func(t *testing.T) {
+		// Check that inner flags have been set up correctly
+		requestflag.CheckInnerFlags(toolsUpdate)
+
+		// Alternative argument passing style using inner flags
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"tools", "update",
+			"--fleet-id", "fleet_abc123",
+			"--source-id", "toolsrc_abc123",
+			"--auth", "{kind: none}",
+			"--namespace", "docs",
+			"--tool.description", "Search documents",
+			"--tool.endpoint", "{method: GET, url: https://docs.example.com/search, body: json_params, headers: {foo: string}, path: {foo: params.query}, query: {foo: params.query}}",
+			"--tool.input-schema", "{type: bar}",
+			"--tool.name", "search",
+			"--tool.approval", "always",
+			"--tool.execution", "{idempotencyKeyHeader: idempotencyKeyHeader, maxAttempts: 3, retryMode: safe_only, timeoutMs: 10000}",
+			"--tool.response", "{mode: auto}",
+			"--type", "http",
+			"--approval", "always",
+			"--enabled=true",
+			"--execution.idempotency-key-header", "idempotencyKeyHeader",
+			"--execution.max-attempts", "3",
+			"--execution.retry-mode", "safe_only",
+			"--execution.timeout-ms", "10000",
+			"--url", "https://mcp.example.com",
 		)
 	})
 
@@ -125,7 +202,8 @@ func TestToolsUpdate(t *testing.T) {
 			"  idempotencyKeyHeader: idempotencyKeyHeader\n" +
 			"  maxAttempts: 3\n" +
 			"  retryMode: safe_only\n" +
-			"  timeoutMs: 10000\n")
+			"  timeoutMs: 10000\n" +
+			"url: https://mcp.example.com\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
