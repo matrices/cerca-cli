@@ -16,7 +16,7 @@ import (
 
 var toolsCreate = cli.Command{
 	Name:    "create",
-	Usage:   "Create tool source",
+	Usage:   "Create tool",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -81,7 +81,7 @@ var toolsUpdate = cli.Command{
 
 var toolsList = cli.Command{
 	Name:    "list",
-	Usage:   "List tool sources",
+	Usage:   "List tools",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
