@@ -6,22 +6,23 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var sandboxExec = cli.Command{
 	Name:    "exec",
-	Usage:   "Perform exec operation",
+	Usage:   "Execute sandbox command",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
 			Name:     "command",
@@ -37,7 +38,7 @@ var sandboxExec = cli.Command{
 			Usage:    "Timeout in seconds. Runtime converts this to milliseconds.",
 			BodyPath: "timeout",
 		},
-		&requestflag.Flag[any]{
+		&requestflag.Flag[*string]{
 			Name:     "workdir",
 			Usage:    "Optional sandbox working directory.",
 			BodyPath: "workdir",
@@ -49,12 +50,13 @@ var sandboxExec = cli.Command{
 
 var sandboxRead = cli.Command{
 	Name:    "read",
-	Usage:   "Perform read operation",
+	Usage:   "Read sandbox file",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
 			Name:     "path",
@@ -76,12 +78,13 @@ var sandboxRead = cli.Command{
 
 var sandboxWrite = cli.Command{
 	Name:    "write",
-	Usage:   "Perform write operation",
+	Usage:   "Write sandbox file",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
 			Name:     "content",
@@ -109,8 +112,6 @@ func handleSandboxExec(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.SandboxExecParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -121,6 +122,8 @@ func handleSandboxExec(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.SandboxExecParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -158,8 +161,6 @@ func handleSandboxRead(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.SandboxReadParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -170,6 +171,8 @@ func handleSandboxRead(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.SandboxReadParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -207,8 +210,6 @@ func handleSandboxWrite(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.SandboxWriteParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -219,6 +220,8 @@ func handleSandboxWrite(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.SandboxWriteParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))

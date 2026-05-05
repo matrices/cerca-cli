@@ -4,6 +4,8 @@ The official CLI for the [Cerca REST API](https://docs.cerca.dev).
 
 It is generated with [Stainless](https://www.stainless.com/).
 
+<!-- x-release-please-start-version -->
+
 ## Installation
 
 ### Installing with Go
@@ -11,7 +13,7 @@ It is generated with [Stainless](https://www.stainless.com/).
 To test or install the CLI locally, you need [Go](https://go.dev/doc/install) version 1.22 or later installed.
 
 ```sh
-go install 'github.com/stainless-sdks/cerca-cli/cmd/cerca@latest'
+go install 'github.com/matrices/cerca-cli/cmd/cerca@latest'
 ```
 
 Once you have run `go install`, the binary is placed in your Go bin directory:
@@ -25,6 +27,8 @@ If commands aren't found after installation, add the Go bin directory to your PA
 # Add to your shell profile (.zshrc, .bashrc, etc.)
 export PATH="$PATH:$(go env GOPATH)/bin"
 ```
+
+<!-- x-release-please-end -->
 
 ### Running Locally
 
@@ -47,7 +51,7 @@ cerca [resource] <command> [flags...]
 cerca threads create \
   --api-key 'My API Key' \
   --agent-id agent_abc123 \
-  --user-message "What's on my calendar today?"
+  --message "What's on my calendar today?"
 ```
 
 For details about specific commands, use the `--help` flag.

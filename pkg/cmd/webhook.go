@@ -6,22 +6,23 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var webhooksCreate = cli.Command{
 	Name:    "create",
-	Usage:   "Perform create operation",
+	Usage:   "Create webhook",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
 		},
 		&requestflag.Flag[string]{
 			Name:     "url",
@@ -41,16 +42,18 @@ var webhooksCreate = cli.Command{
 
 var webhooksRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Perform retrieve operation",
+	Usage:   "Retrieve webhook",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "webhook-id",
-			Required: true,
+			Name:      "webhook-id",
+			Required:  true,
+			PathParam: "webhookId",
 		},
 	},
 	Action:          handleWebhooksRetrieve,
@@ -59,16 +62,18 @@ var webhooksRetrieve = cli.Command{
 
 var webhooksUpdate = cli.Command{
 	Name:    "update",
-	Usage:   "Perform update operation",
+	Usage:   "Update webhook",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "webhook-id",
-			Required: true,
+			Name:      "webhook-id",
+			Required:  true,
+			PathParam: "webhookId",
 		},
 		&requestflag.Flag[bool]{
 			Name:     "enabled",
@@ -92,12 +97,13 @@ var webhooksUpdate = cli.Command{
 
 var webhooksList = cli.Command{
 	Name:    "list",
-	Usage:   "Perform list operation",
+	Usage:   "List webhooks",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
 		},
 		&requestflag.Flag[string]{
 			Name:      "cursor",
@@ -120,16 +126,18 @@ var webhooksList = cli.Command{
 
 var webhooksDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Perform delete operation",
+	Usage:   "Delete webhook",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "webhook-id",
-			Required: true,
+			Name:      "webhook-id",
+			Required:  true,
+			PathParam: "webhookId",
 		},
 	},
 	Action:          handleWebhooksDelete,
@@ -138,16 +146,18 @@ var webhooksDelete = cli.Command{
 
 var webhooksRotate = cli.Command{
 	Name:    "rotate",
-	Usage:   "Perform rotate operation",
+	Usage:   "Rotate webhook secret",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "webhook-id",
-			Required: true,
+			Name:      "webhook-id",
+			Required:  true,
+			PathParam: "webhookId",
 		},
 	},
 	Action:          handleWebhooksRotate,
@@ -156,16 +166,18 @@ var webhooksRotate = cli.Command{
 
 var webhooksTest = cli.Command{
 	Name:    "test",
-	Usage:   "Perform test operation",
+	Usage:   "Send test webhook",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "webhook-id",
-			Required: true,
+			Name:      "webhook-id",
+			Required:  true,
+			PathParam: "webhookId",
 		},
 	},
 	Action:          handleWebhooksTest,
@@ -183,8 +195,6 @@ func handleWebhooksCreate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.WebhookNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -195,6 +205,8 @@ func handleWebhooksCreate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.WebhookNewParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -287,8 +299,6 @@ func handleWebhooksUpdate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.WebhookUpdateParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -299,6 +309,8 @@ func handleWebhooksUpdate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.WebhookUpdateParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -337,8 +349,6 @@ func handleWebhooksList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.WebhookListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -349,6 +359,8 @@ func handleWebhooksList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.WebhookListParams{}
 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")

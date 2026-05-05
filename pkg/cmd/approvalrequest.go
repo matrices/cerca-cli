@@ -6,22 +6,23 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
-var approvalsList = cli.Command{
+var approvalRequestsList = cli.Command{
 	Name:    "list",
-	Usage:   "Perform list operation",
+	Usage:   "List approvals",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
 			Name:      "cursor",
@@ -43,26 +44,29 @@ var approvalsList = cli.Command{
 			Usage: "The maximum number of items to return (use -1 for unlimited).",
 		},
 	},
-	Action:          handleApprovalsList,
+	Action:          handleApprovalRequestsList,
 	HideHelpCommand: true,
 }
 
-var approvalsResolve = cli.Command{
+var approvalRequestsResolve = cli.Command{
 	Name:    "resolve",
-	Usage:   "Perform resolve operation",
+	Usage:   "Create approval",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "thread-id",
-			Required: true,
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "approval-id",
-			Required: true,
+			Name:      "approval-id",
+			Required:  true,
+			PathParam: "approvalId",
 		},
 		&requestflag.Flag[string]{
 			Name:     "decision",
@@ -76,11 +80,11 @@ var approvalsResolve = cli.Command{
 			BodyPath: "grant",
 		},
 	},
-	Action:          handleApprovalsResolve,
+	Action:          handleApprovalRequestsResolve,
 	HideHelpCommand: true,
 }
 
-func handleApprovalsList(ctx context.Context, cmd *cli.Command) error {
+func handleApprovalRequestsList(ctx context.Context, cmd *cli.Command) error {
 	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("agent-id") && len(unusedArgs) > 0 {
@@ -90,8 +94,6 @@ func handleApprovalsList(ctx context.Context, cmd *cli.Command) error {
 	if len(unusedArgs) > 0 {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
-
-	params := cercago.ApprovalListParams{}
 
 	options, err := flagOptions(
 		cmd,
@@ -104,13 +106,15 @@ func handleApprovalsList(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	params := cercago.ApprovalRequestListParams{}
+
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
 	if format == "raw" {
 		var res []byte
 		options = append(options, option.WithResponseBodyInto(&res))
-		_, err = client.Approvals.List(
+		_, err = client.ApprovalRequests.List(
 			ctx,
 			cmd.Value("agent-id").(string),
 			params,
@@ -124,11 +128,11 @@ func handleApprovalsList(ctx context.Context, cmd *cli.Command) error {
 			ExplicitFormat: explicitFormat,
 			Format:         format,
 			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "approvals list",
+			Title:          "approval-requests list",
 			Transform:      transform,
 		})
 	} else {
-		iter := client.Approvals.ListAutoPaging(
+		iter := client.ApprovalRequests.ListAutoPaging(
 			ctx,
 			cmd.Value("agent-id").(string),
 			params,
@@ -142,13 +146,13 @@ func handleApprovalsList(ctx context.Context, cmd *cli.Command) error {
 			ExplicitFormat: explicitFormat,
 			Format:         format,
 			RawOutput:      cmd.Root().Bool("raw-output"),
-			Title:          "approvals list",
+			Title:          "approval-requests list",
 			Transform:      transform,
 		})
 	}
 }
 
-func handleApprovalsResolve(ctx context.Context, cmd *cli.Command) error {
+func handleApprovalRequestsResolve(ctx context.Context, cmd *cli.Command) error {
 	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("agent-id") && len(unusedArgs) > 0 {
@@ -167,8 +171,6 @@ func handleApprovalsResolve(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.ApprovalResolveParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -180,9 +182,11 @@ func handleApprovalsResolve(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
+	params := cercago.ApprovalRequestResolveParams{}
+
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Approvals.Resolve(
+	_, err = client.ApprovalRequests.Resolve(
 		ctx,
 		cmd.Value("agent-id").(string),
 		cmd.Value("thread-id").(string),
@@ -202,7 +206,7 @@ func handleApprovalsResolve(ctx context.Context, cmd *cli.Command) error {
 		ExplicitFormat: explicitFormat,
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "approvals resolve",
+		Title:          "approval-requests resolve",
 		Transform:      transform,
 	})
 }

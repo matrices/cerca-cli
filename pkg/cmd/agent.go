@@ -6,24 +6,19 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var agentsCreate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "create",
-	Usage:   "Perform create operation",
+	Usage:   "Create agent",
 	Suggest: true,
 	Flags: []cli.Flag{
-		&requestflag.Flag[string]{
-			Name:     "user-id",
-			Required: true,
-			BodyPath: "userId",
-		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "configuration",
 			BodyPath: "configuration",
@@ -36,6 +31,10 @@ var agentsCreate = requestflag.WithInnerFlags(cli.Command{
 			Name:     "metadata",
 			Usage:    "Arbitrary string metadata stored on an agent. Runtime enforces maximum key and value sizes.",
 			BodyPath: "metadata",
+		},
+		&requestflag.Flag[string]{
+			Name:     "user-id",
+			BodyPath: "userId",
 		},
 	},
 	Action:          handleAgentsCreate,
@@ -56,6 +55,7 @@ var agentsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[[]string]{
 			Name:       "configuration.tools",
+			Usage:      "Agent tool allowlist. These tools are subject to fleet defaults and locks, and thread or turn requests may only narrow the resulting effective tools.",
 			InnerField: "tools",
 		},
 	},
@@ -63,12 +63,13 @@ var agentsCreate = requestflag.WithInnerFlags(cli.Command{
 
 var agentsRetrieve = cli.Command{
 	Name:    "retrieve",
-	Usage:   "Perform retrieve operation",
+	Usage:   "Retrieve agent",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 	},
 	Action:          handleAgentsRetrieve,
@@ -77,12 +78,13 @@ var agentsRetrieve = cli.Command{
 
 var agentsUpdate = requestflag.WithInnerFlags(cli.Command{
 	Name:    "update",
-	Usage:   "Perform update operation",
+	Usage:   "Update agent",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "configuration",
@@ -108,6 +110,7 @@ var agentsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.InnerFlag[[]string]{
 			Name:       "configuration.tools",
+			Usage:      "Agent tool allowlist. These tools are subject to fleet defaults and locks, and thread or turn requests may only narrow the resulting effective tools.",
 			InnerField: "tools",
 		},
 	},
@@ -115,7 +118,7 @@ var agentsUpdate = requestflag.WithInnerFlags(cli.Command{
 
 var agentsList = cli.Command{
 	Name:    "list",
-	Usage:   "Perform list operation",
+	Usage:   "List agents",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
@@ -149,26 +152,43 @@ var agentsList = cli.Command{
 
 var agentsDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Perform delete operation",
+	Usage:   "Delete agent",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 	},
 	Action:          handleAgentsDelete,
 	HideHelpCommand: true,
 }
 
-var agentsRetrieveConfig = cli.Command{
-	Name:    "retrieve-config",
-	Usage:   "Perform retrieve-config operation",
+var agentsListTools = cli.Command{
+	Name:    "list-tools",
+	Usage:   "List tools",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
+		},
+	},
+	Action:          handleAgentsListTools,
+	HideHelpCommand: true,
+}
+
+var agentsRetrieveConfig = cli.Command{
+	Name:    "retrieve-config",
+	Usage:   "Retrieve config",
+	Suggest: true,
+	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 	},
 	Action:          handleAgentsRetrieveConfig,
@@ -177,12 +197,13 @@ var agentsRetrieveConfig = cli.Command{
 
 var agentsUpdateMetadata = cli.Command{
 	Name:    "update-metadata",
-	Usage:   "Perform update-metadata operation",
+	Usage:   "Update metadata",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[map[string]any]{
 			Name:     "metadata",
@@ -203,8 +224,6 @@ func handleAgentsCreate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.AgentNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -215,6 +234,8 @@ func handleAgentsCreate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.AgentNewParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -289,8 +310,6 @@ func handleAgentsUpdate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.AgentUpdateParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -301,6 +320,8 @@ func handleAgentsUpdate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.AgentUpdateParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -335,8 +356,6 @@ func handleAgentsList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.AgentListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -347,6 +366,8 @@ func handleAgentsList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.AgentListParams{}
 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
@@ -424,6 +445,48 @@ func handleAgentsDelete(ctx context.Context, cmd *cli.Command) error {
 	})
 }
 
+func handleAgentsListTools(ctx context.Context, cmd *cli.Command) error {
+	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
+	unusedArgs := cmd.Args().Slice()
+	if !cmd.IsSet("agent-id") && len(unusedArgs) > 0 {
+		cmd.Set("agent-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
+	if len(unusedArgs) > 0 {
+		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
+	}
+
+	options, err := flagOptions(
+		cmd,
+		apiquery.NestedQueryFormatBrackets,
+		apiquery.ArrayQueryFormatComma,
+		EmptyBody,
+		false,
+	)
+	if err != nil {
+		return err
+	}
+
+	var res []byte
+	options = append(options, option.WithResponseBodyInto(&res))
+	_, err = client.Agents.ListTools(ctx, cmd.Value("agent-id").(string), options...)
+	if err != nil {
+		return err
+	}
+
+	obj := gjson.ParseBytes(res)
+	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
+	transform := cmd.Root().String("transform")
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "agents list-tools",
+		Transform:      transform,
+	})
+}
+
 func handleAgentsRetrieveConfig(ctx context.Context, cmd *cli.Command) error {
 	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
@@ -477,8 +540,6 @@ func handleAgentsUpdateMetadata(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.AgentUpdateMetadataParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -489,6 +550,8 @@ func handleAgentsUpdateMetadata(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.AgentUpdateMetadataParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))

@@ -5,8 +5,37 @@ package cmd
 import (
 	"testing"
 
-	"github.com/stainless-sdks/cerca-cli/internal/mocktest"
+	"github.com/matrices/cerca-cli/internal/mocktest"
 )
+
+func TestConnectionsCreate(t *testing.T) {
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"connections", "create",
+			"--api-key", "sk_live_...",
+			"--owner", "{type: organization}",
+			"--provider", "custom",
+			"--account-label", "primary",
+		)
+	})
+
+	t.Run("piping data", func(t *testing.T) {
+		// Test piping YAML data over stdin
+		pipeData := []byte("" +
+			"apiKey: sk_live_...\n" +
+			"owner:\n" +
+			"  type: organization\n" +
+			"provider: custom\n" +
+			"accountLabel: primary\n")
+		mocktest.TestRunMockTestWithPipeAndFlags(
+			t, pipeData,
+			"--api-key", "string",
+			"connections", "create",
+		)
+	})
+}
 
 func TestConnectionsList(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
@@ -14,7 +43,24 @@ func TestConnectionsList(t *testing.T) {
 			t,
 			"--api-key", "string",
 			"connections", "list",
-			"--agent-id", "agent_abc123",
+			"--max-items", "10",
+			"--owner-type", "fleet",
+			"--cursor", "cursor_abc123",
+			"--fleet-id", "fleet_abc123",
+			"--limit", "20",
+		)
+	})
+}
+
+func TestConnectionsDelete(t *testing.T) {
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"connections", "delete",
+			"--connection-id", "9f063c59-2775-4614-8a68-22e5f90f92f3",
+			"--owner-type", "fleet",
+			"--fleet-id", "fleet_abc123",
 		)
 	})
 }
@@ -26,7 +72,7 @@ func TestConnectionsAttach(t *testing.T) {
 			"--api-key", "string",
 			"connections", "attach",
 			"--agent-id", "agent_abc123",
-			"--connection-id", "connectionId",
+			"--connection-id", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 			"--metadata", "{foo: string}",
 		)
 	})
@@ -34,7 +80,7 @@ func TestConnectionsAttach(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"connectionId: connectionId\n" +
+			"connectionId: 182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e\n" +
 			"metadata:\n" +
 			"  foo: string\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
@@ -53,7 +99,18 @@ func TestConnectionsDetach(t *testing.T) {
 			"--api-key", "string",
 			"connections", "detach",
 			"--agent-id", "agent_abc123",
-			"--connection-id", "env:org_abc123:fleet_abc123::conn_abc123",
+			"--connection-id", "9f063c59-2775-4614-8a68-22e5f90f92f3",
+		)
+	})
+}
+
+func TestConnectionsListForAgent(t *testing.T) {
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"connections", "list-for-agent",
+			"--agent-id", "agent_abc123",
 		)
 	})
 }

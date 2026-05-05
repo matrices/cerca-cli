@@ -5,7 +5,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/stainless-sdks/cerca-cli/internal/mocktest"
+	"github.com/matrices/cerca-cli/internal/mocktest"
 )
 
 func TestEventsListForAgent(t *testing.T) {
@@ -57,36 +57,64 @@ func TestEventsListForThread(t *testing.T) {
 	})
 }
 
-func TestEventsSubscribeAgent(t *testing.T) {
+func TestEventsStreamForAgent(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"--api-key", "string",
-			"events", "subscribe-agent",
+			"events", "stream-for-agent",
+			"--max-items", "10",
 			"--agent-id", "agent_abc123",
+			"--cursor", "cursor_abc123",
+			"--events", "thread.created,thread.completed",
+			"--history", "true",
+			"--last-event-id", "4711",
 		)
 	})
 }
 
-func TestEventsSubscribeFleet(t *testing.T) {
+func TestEventsStreamForFleet(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"--api-key", "string",
-			"events", "subscribe-fleet",
+			"events", "stream-for-fleet",
+			"--max-items", "10",
 			"--fleet-id", "fleet_abc123",
+			"--cursor", "cursor_abc123",
+			"--events", "thread.created,thread.completed",
+			"--history", "true",
+			"--last-event-id", "4711",
 		)
 	})
 }
 
-func TestEventsSubscribeThread(t *testing.T) {
+func TestEventsStreamForThread(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
 			t,
 			"--api-key", "string",
-			"events", "subscribe-thread",
+			"events", "stream-for-thread",
+			"--max-items", "10",
 			"--agent-id", "agent_abc123",
 			"--thread-id", "thread_abc123",
+		)
+	})
+}
+
+func TestEventsStreamForThreadEvents(t *testing.T) {
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"events", "stream-for-thread-events",
+			"--max-items", "10",
+			"--agent-id", "agent_abc123",
+			"--thread-id", "thread_abc123",
+			"--cursor", "cursor_abc123",
+			"--events", "thread.created,thread.completed",
+			"--history", "true",
+			"--last-event-id", "4711",
 		)
 	})
 }

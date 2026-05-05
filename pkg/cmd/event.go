@@ -6,22 +6,23 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var eventsListForAgent = cli.Command{
 	Name:    "list-for-agent",
-	Usage:   "Perform list-for-agent operation",
+	Usage:   "List events",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
 			Name:      "cursor",
@@ -54,12 +55,13 @@ var eventsListForAgent = cli.Command{
 
 var eventsListForFleet = cli.Command{
 	Name:    "list-for-fleet",
-	Usage:   "Perform list-for-fleet operation",
+	Usage:   "List events",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
 		},
 		&requestflag.Flag[string]{
 			Name:      "cursor",
@@ -92,16 +94,18 @@ var eventsListForFleet = cli.Command{
 
 var eventsListForThread = cli.Command{
 	Name:    "list-for-thread",
-	Usage:   "Perform list-for-thread operation",
+	Usage:   "List events",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "thread-id",
-			Required: true,
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
 		},
 		&requestflag.Flag[string]{
 			Name:      "cursor",
@@ -132,49 +136,149 @@ var eventsListForThread = cli.Command{
 	HideHelpCommand: true,
 }
 
-var eventsSubscribeAgent = cli.Command{
-	Name:    "subscribe-agent",
-	Usage:   "WebSocket upgrade endpoint. Set\n`Sec-WebSocket-Protocol: agent-v1, agent-auth-<API_KEY>` so the runtime can\nauthenticate the stream while preserving the public subprotocol. HTTP clients\nthat cannot upgrade should use `/agents/{agentId}/events` as the polling analog.",
+var eventsStreamForAgent = cli.Command{
+	Name:    "stream-for-agent",
+	Usage:   "Server-Sent Events stream. Each SSE data frame is JSON matching this response\nschema.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
+		},
+		&requestflag.Flag[string]{
+			Name:      "cursor",
+			Usage:     "Opaque pagination cursor returned by a previous request.",
+			QueryPath: "cursor",
+		},
+		&requestflag.Flag[string]{
+			Name:      "events",
+			Usage:     "Comma-separated event type filter.",
+			QueryPath: "events",
+		},
+		&requestflag.Flag[string]{
+			Name:      "history",
+			Usage:     "When true, starts from the beginning of the retained buffer.",
+			QueryPath: "history",
+		},
+		&requestflag.Flag[string]{
+			Name:       "last-event-id",
+			Usage:      "Resume an event-log stream after the last received SSE event id.",
+			HeaderPath: "Last-Event-ID",
+		},
+		&requestflag.Flag[int64]{
+			Name:  "max-items",
+			Usage: "The maximum number of items to return (use -1 for unlimited).",
 		},
 	},
-	Action:          handleEventsSubscribeAgent,
+	Action:          handleEventsStreamForAgent,
 	HideHelpCommand: true,
 }
 
-var eventsSubscribeFleet = cli.Command{
-	Name:    "subscribe-fleet",
-	Usage:   "WebSocket upgrade endpoint. Set\n`Sec-WebSocket-Protocol: agent-v1, agent-auth-<API_KEY>` so the runtime can\nauthenticate the stream while preserving the public subprotocol. HTTP clients\nthat cannot upgrade should use `/fleets/{fleetId}/events` as the polling analog.",
+var eventsStreamForFleet = cli.Command{
+	Name:    "stream-for-fleet",
+	Usage:   "Server-Sent Events stream. Each SSE data frame is JSON matching this response\nschema.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "fleet-id",
-			Required: true,
+			Name:      "fleet-id",
+			Required:  true,
+			PathParam: "fleetId",
+		},
+		&requestflag.Flag[string]{
+			Name:      "cursor",
+			Usage:     "Opaque pagination cursor returned by a previous request.",
+			QueryPath: "cursor",
+		},
+		&requestflag.Flag[string]{
+			Name:      "events",
+			Usage:     "Comma-separated event type filter.",
+			QueryPath: "events",
+		},
+		&requestflag.Flag[string]{
+			Name:      "history",
+			Usage:     "When true, starts from the beginning of the retained buffer.",
+			QueryPath: "history",
+		},
+		&requestflag.Flag[string]{
+			Name:       "last-event-id",
+			Usage:      "Resume an event-log stream after the last received SSE event id.",
+			HeaderPath: "Last-Event-ID",
+		},
+		&requestflag.Flag[int64]{
+			Name:  "max-items",
+			Usage: "The maximum number of items to return (use -1 for unlimited).",
 		},
 	},
-	Action:          handleEventsSubscribeFleet,
+	Action:          handleEventsStreamForFleet,
 	HideHelpCommand: true,
 }
 
-var eventsSubscribeThread = cli.Command{
-	Name:    "subscribe-thread",
-	Usage:   "WebSocket upgrade endpoint. Set\n`Sec-WebSocket-Protocol: agent-v1, agent-auth-<API_KEY>` so the runtime can\nauthenticate the stream while preserving the public subprotocol. HTTP clients\nthat cannot upgrade should use `/agents/{agentId}/threads/{threadId}/events` as\nthe polling analog.",
+var eventsStreamForThread = cli.Command{
+	Name:    "stream-for-thread",
+	Usage:   "Server-Sent Events stream. Each SSE data frame is JSON matching this response\nschema.",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "thread-id",
-			Required: true,
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
+		},
+		&requestflag.Flag[int64]{
+			Name:  "max-items",
+			Usage: "The maximum number of items to return (use -1 for unlimited).",
 		},
 	},
-	Action:          handleEventsSubscribeThread,
+	Action:          handleEventsStreamForThread,
+	HideHelpCommand: true,
+}
+
+var eventsStreamForThreadEvents = cli.Command{
+	Name:    "stream-for-thread-events",
+	Usage:   "Server-Sent Events stream. Each SSE data frame is JSON matching this response\nschema.",
+	Suggest: true,
+	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
+		},
+		&requestflag.Flag[string]{
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
+		},
+		&requestflag.Flag[string]{
+			Name:      "cursor",
+			Usage:     "Opaque pagination cursor returned by a previous request.",
+			QueryPath: "cursor",
+		},
+		&requestflag.Flag[string]{
+			Name:      "events",
+			Usage:     "Comma-separated event type filter.",
+			QueryPath: "events",
+		},
+		&requestflag.Flag[string]{
+			Name:      "history",
+			Usage:     "When true, starts from the beginning of the retained buffer.",
+			QueryPath: "history",
+		},
+		&requestflag.Flag[string]{
+			Name:       "last-event-id",
+			Usage:      "Resume an event-log stream after the last received SSE event id.",
+			HeaderPath: "Last-Event-ID",
+		},
+		&requestflag.Flag[int64]{
+			Name:  "max-items",
+			Usage: "The maximum number of items to return (use -1 for unlimited).",
+		},
+	},
+	Action:          handleEventsStreamForThreadEvents,
 	HideHelpCommand: true,
 }
 
@@ -189,8 +293,6 @@ func handleEventsListForAgent(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.EventListForAgentParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -201,6 +303,8 @@ func handleEventsListForAgent(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.EventListForAgentParams{}
 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
@@ -257,8 +361,6 @@ func handleEventsListForFleet(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.EventListForFleetParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -269,6 +371,8 @@ func handleEventsListForFleet(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.EventListForFleetParams{}
 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
@@ -329,8 +433,6 @@ func handleEventsListForThread(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.EventListForThreadParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -341,6 +443,8 @@ func handleEventsListForThread(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.EventListForThreadParams{}
 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
@@ -388,7 +492,7 @@ func handleEventsListForThread(ctx context.Context, cmd *cli.Command) error {
 	}
 }
 
-func handleEventsSubscribeAgent(ctx context.Context, cmd *cli.Command) error {
+func handleEventsStreamForAgent(ctx context.Context, cmd *cli.Command) error {
 	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("agent-id") && len(unusedArgs) > 0 {
@@ -410,27 +514,31 @@ func handleEventsSubscribeAgent(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	var res []byte
-	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Events.SubscribeAgent(ctx, cmd.Value("agent-id").(string), options...)
-	if err != nil {
-		return err
-	}
+	params := cercago.EventStreamForAgentParams{}
 
-	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(obj, ShowJSONOpts{
+	stream := client.Events.StreamForAgentStreaming(
+		ctx,
+		cmd.Value("agent-id").(string),
+		params,
+		options...,
+	)
+	maxItems := int64(-1)
+	if cmd.IsSet("max-items") {
+		maxItems = cmd.Value("max-items").(int64)
+	}
+	return ShowJSONIterator(stream, maxItems, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "events subscribe-agent",
+		Title:          "events stream-for-agent",
 		Transform:      transform,
 	})
 }
 
-func handleEventsSubscribeFleet(ctx context.Context, cmd *cli.Command) error {
+func handleEventsStreamForFleet(ctx context.Context, cmd *cli.Command) error {
 	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("fleet-id") && len(unusedArgs) > 0 {
@@ -452,27 +560,31 @@ func handleEventsSubscribeFleet(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	var res []byte
-	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Events.SubscribeFleet(ctx, cmd.Value("fleet-id").(string), options...)
-	if err != nil {
-		return err
-	}
+	params := cercago.EventStreamForFleetParams{}
 
-	obj := gjson.ParseBytes(res)
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(obj, ShowJSONOpts{
+	stream := client.Events.StreamForFleetStreaming(
+		ctx,
+		cmd.Value("fleet-id").(string),
+		params,
+		options...,
+	)
+	maxItems := int64(-1)
+	if cmd.IsSet("max-items") {
+		maxItems = cmd.Value("max-items").(int64)
+	}
+	return ShowJSONIterator(stream, maxItems, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "events subscribe-fleet",
+		Title:          "events stream-for-fleet",
 		Transform:      transform,
 	})
 }
 
-func handleEventsSubscribeThread(ctx context.Context, cmd *cli.Command) error {
+func handleEventsStreamForThread(ctx context.Context, cmd *cli.Command) error {
 	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
 	if !cmd.IsSet("agent-id") && len(unusedArgs) > 0 {
@@ -498,27 +610,75 @@ func handleEventsSubscribeThread(ctx context.Context, cmd *cli.Command) error {
 		return err
 	}
 
-	var res []byte
-	options = append(options, option.WithResponseBodyInto(&res))
-	_, err = client.Events.SubscribeThread(
+	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
+	transform := cmd.Root().String("transform")
+	stream := client.Events.StreamForThreadStreaming(
 		ctx,
 		cmd.Value("agent-id").(string),
 		cmd.Value("thread-id").(string),
 		options...,
 	)
+	maxItems := int64(-1)
+	if cmd.IsSet("max-items") {
+		maxItems = cmd.Value("max-items").(int64)
+	}
+	return ShowJSONIterator(stream, maxItems, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "events stream-for-thread",
+		Transform:      transform,
+	})
+}
+
+func handleEventsStreamForThreadEvents(ctx context.Context, cmd *cli.Command) error {
+	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
+	unusedArgs := cmd.Args().Slice()
+	if !cmd.IsSet("agent-id") && len(unusedArgs) > 0 {
+		cmd.Set("agent-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
+	if !cmd.IsSet("thread-id") && len(unusedArgs) > 0 {
+		cmd.Set("thread-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
+	if len(unusedArgs) > 0 {
+		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
+	}
+
+	options, err := flagOptions(
+		cmd,
+		apiquery.NestedQueryFormatBrackets,
+		apiquery.ArrayQueryFormatComma,
+		EmptyBody,
+		false,
+	)
 	if err != nil {
 		return err
 	}
 
-	obj := gjson.ParseBytes(res)
+	params := cercago.EventStreamForThreadEventsParams{}
+
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")
 	transform := cmd.Root().String("transform")
-	return ShowJSON(obj, ShowJSONOpts{
+	stream := client.Events.StreamForThreadEventsStreaming(
+		ctx,
+		cmd.Value("agent-id").(string),
+		cmd.Value("thread-id").(string),
+		params,
+		options...,
+	)
+	maxItems := int64(-1)
+	if cmd.IsSet("max-items") {
+		maxItems = cmd.Value("max-items").(int64)
+	}
+	return ShowJSONIterator(stream, maxItems, ShowJSONOpts{
 		ExplicitFormat: explicitFormat,
 		Format:         format,
 		RawOutput:      cmd.Root().Bool("raw-output"),
-		Title:          "events subscribe-thread",
+		Title:          "events stream-for-thread-events",
 		Transform:      transform,
 	})
 }

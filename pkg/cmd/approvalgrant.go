@@ -6,22 +6,23 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var approvalGrantsList = cli.Command{
 	Name:    "list",
-	Usage:   "Perform list operation",
+	Usage:   "List approval grants",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
 			Name:      "cursor",
@@ -44,16 +45,18 @@ var approvalGrantsList = cli.Command{
 
 var approvalGrantsDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Perform delete operation",
+	Usage:   "Delete approval grant",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "grant-id",
-			Required: true,
+			Name:      "grant-id",
+			Required:  true,
+			PathParam: "grantId",
 		},
 	},
 	Action:          handleApprovalGrantsDelete,
@@ -62,20 +65,23 @@ var approvalGrantsDelete = cli.Command{
 
 var approvalGrantsDeleteForThread = cli.Command{
 	Name:    "delete-for-thread",
-	Usage:   "Perform delete-for-thread operation",
+	Usage:   "Delete approval grant",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "thread-id",
-			Required: true,
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "grant-id",
-			Required: true,
+			Name:      "grant-id",
+			Required:  true,
+			PathParam: "grantId",
 		},
 	},
 	Action:          handleApprovalGrantsDeleteForThread,
@@ -84,16 +90,18 @@ var approvalGrantsDeleteForThread = cli.Command{
 
 var approvalGrantsListForThread = cli.Command{
 	Name:    "list-for-thread",
-	Usage:   "Perform list-for-thread operation",
+	Usage:   "List approval grants",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "thread-id",
-			Required: true,
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
 		},
 	},
 	Action:          handleApprovalGrantsListForThread,
@@ -111,8 +119,6 @@ func handleApprovalGrantsList(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.ApprovalGrantListParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -123,6 +129,8 @@ func handleApprovalGrantsList(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.ApprovalGrantListParams{}
 
 	format := cmd.Root().String("format")
 	explicitFormat := cmd.Root().IsSet("format")

@@ -5,7 +5,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/stainless-sdks/cerca-cli/internal/mocktest"
+	"github.com/matrices/cerca-cli/internal/mocktest"
 )
 
 func TestSchedulesCreate(t *testing.T) {
@@ -15,11 +15,12 @@ func TestSchedulesCreate(t *testing.T) {
 			"--api-key", "string",
 			"schedules", "create",
 			"--agent-id", "agent_abc123",
-			"--cron", "cron",
+			"--message", "message",
 			"--name", "name",
-			"--prompt", "prompt",
+			"--cron", "cron",
 			"--instructions", "instructions",
 			"--model", "model",
+			"--run-at", "'2019-12-27T18:11:19.117Z'",
 			"--timezone", "timezone",
 			"--tool", "sandbox.*",
 		)
@@ -28,11 +29,12 @@ func TestSchedulesCreate(t *testing.T) {
 	t.Run("piping data", func(t *testing.T) {
 		// Test piping YAML data over stdin
 		pipeData := []byte("" +
-			"cron: cron\n" +
+			"message: message\n" +
 			"name: name\n" +
-			"prompt: prompt\n" +
+			"cron: cron\n" +
 			"instructions: instructions\n" +
 			"model: model\n" +
+			"runAt: '2019-12-27T18:11:19.117Z'\n" +
 			"timezone: timezone\n" +
 			"tools:\n" +
 			"  - sandbox.*\n")
@@ -56,9 +58,10 @@ func TestSchedulesUpdate(t *testing.T) {
 			"--cron", "cron",
 			"--enabled=true",
 			"--instructions", "instructions",
+			"--message", "message",
 			"--model", "model",
 			"--name", "name",
-			"--prompt", "prompt",
+			"--run-at", "'2019-12-27T18:11:19.117Z'",
 			"--timezone", "timezone",
 			"--tool", "sandbox.*",
 		)
@@ -70,9 +73,10 @@ func TestSchedulesUpdate(t *testing.T) {
 			"cron: cron\n" +
 			"enabled: true\n" +
 			"instructions: instructions\n" +
+			"message: message\n" +
 			"model: model\n" +
 			"name: name\n" +
-			"prompt: prompt\n" +
+			"runAt: '2019-12-27T18:11:19.117Z'\n" +
 			"timezone: timezone\n" +
 			"tools:\n" +
 			"  - sandbox.*\n")

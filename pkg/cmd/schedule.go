@@ -6,27 +6,28 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrices/cerca-cli/internal/apiquery"
+	"github.com/matrices/cerca-cli/internal/requestflag"
 	"github.com/matrices/cerca-go"
 	"github.com/matrices/cerca-go/option"
-	"github.com/stainless-sdks/cerca-cli/internal/apiquery"
-	"github.com/stainless-sdks/cerca-cli/internal/requestflag"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v3"
 )
 
 var schedulesCreate = cli.Command{
 	Name:    "create",
-	Usage:   "Perform create operation",
+	Usage:   "Create schedule",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "cron",
+			Name:     "message",
 			Required: true,
-			BodyPath: "cron",
+			BodyPath: "message",
 		},
 		&requestflag.Flag[string]{
 			Name:     "name",
@@ -34,9 +35,8 @@ var schedulesCreate = cli.Command{
 			BodyPath: "name",
 		},
 		&requestflag.Flag[string]{
-			Name:     "prompt",
-			Required: true,
-			BodyPath: "prompt",
+			Name:     "cron",
+			BodyPath: "cron",
 		},
 		&requestflag.Flag[string]{
 			Name:     "instructions",
@@ -46,12 +46,17 @@ var schedulesCreate = cli.Command{
 			Name:     "model",
 			BodyPath: "model",
 		},
+		&requestflag.Flag[any]{
+			Name:     "run-at",
+			BodyPath: "runAt",
+		},
 		&requestflag.Flag[string]{
 			Name:     "timezone",
 			BodyPath: "timezone",
 		},
 		&requestflag.Flag[[]string]{
 			Name:     "tool",
+			Usage:    "Per-schedule tool subset. When the schedule starts a thread, these tools can only narrow the agent's effective tools.",
 			BodyPath: "tools",
 		},
 	},
@@ -61,16 +66,18 @@ var schedulesCreate = cli.Command{
 
 var schedulesUpdate = cli.Command{
 	Name:    "update",
-	Usage:   "Perform update operation",
+	Usage:   "Update schedule",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "schedule-id",
-			Required: true,
+			Name:      "schedule-id",
+			Required:  true,
+			PathParam: "scheduleId",
 		},
 		&requestflag.Flag[string]{
 			Name:     "cron",
@@ -85,6 +92,10 @@ var schedulesUpdate = cli.Command{
 			BodyPath: "instructions",
 		},
 		&requestflag.Flag[string]{
+			Name:     "message",
+			BodyPath: "message",
+		},
+		&requestflag.Flag[string]{
 			Name:     "model",
 			BodyPath: "model",
 		},
@@ -92,9 +103,9 @@ var schedulesUpdate = cli.Command{
 			Name:     "name",
 			BodyPath: "name",
 		},
-		&requestflag.Flag[string]{
-			Name:     "prompt",
-			BodyPath: "prompt",
+		&requestflag.Flag[any]{
+			Name:     "run-at",
+			BodyPath: "runAt",
 		},
 		&requestflag.Flag[string]{
 			Name:     "timezone",
@@ -102,6 +113,7 @@ var schedulesUpdate = cli.Command{
 		},
 		&requestflag.Flag[[]string]{
 			Name:     "tool",
+			Usage:    "Per-schedule tool subset. When updated, these tools can only narrow the agent's effective tools for future scheduled threads.",
 			BodyPath: "tools",
 		},
 	},
@@ -111,12 +123,13 @@ var schedulesUpdate = cli.Command{
 
 var schedulesList = cli.Command{
 	Name:    "list",
-	Usage:   "Perform list operation",
+	Usage:   "List schedules",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 	},
 	Action:          handleSchedulesList,
@@ -125,16 +138,18 @@ var schedulesList = cli.Command{
 
 var schedulesDelete = cli.Command{
 	Name:    "delete",
-	Usage:   "Perform delete operation",
+	Usage:   "Delete schedule",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "schedule-id",
-			Required: true,
+			Name:      "schedule-id",
+			Required:  true,
+			PathParam: "scheduleId",
 		},
 	},
 	Action:          handleSchedulesDelete,
@@ -143,16 +158,18 @@ var schedulesDelete = cli.Command{
 
 var schedulesTrigger = cli.Command{
 	Name:    "trigger",
-	Usage:   "Perform trigger operation",
+	Usage:   "Trigger schedule",
 	Suggest: true,
 	Flags: []cli.Flag{
 		&requestflag.Flag[string]{
-			Name:     "agent-id",
-			Required: true,
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
 		},
 		&requestflag.Flag[string]{
-			Name:     "schedule-id",
-			Required: true,
+			Name:      "schedule-id",
+			Required:  true,
+			PathParam: "scheduleId",
 		},
 	},
 	Action:          handleSchedulesTrigger,
@@ -170,8 +187,6 @@ func handleSchedulesCreate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.ScheduleNewParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -182,6 +197,8 @@ func handleSchedulesCreate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.ScheduleNewParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
@@ -223,8 +240,6 @@ func handleSchedulesUpdate(ctx context.Context, cmd *cli.Command) error {
 		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
 	}
 
-	params := cercago.ScheduleUpdateParams{}
-
 	options, err := flagOptions(
 		cmd,
 		apiquery.NestedQueryFormatBrackets,
@@ -235,6 +250,8 @@ func handleSchedulesUpdate(ctx context.Context, cmd *cli.Command) error {
 	if err != nil {
 		return err
 	}
+
+	params := cercago.ScheduleUpdateParams{}
 
 	var res []byte
 	options = append(options, option.WithResponseBodyInto(&res))
