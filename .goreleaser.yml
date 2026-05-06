@@ -78,3 +78,19 @@ nfpms:
     contents:
       - src: man/man1/*.1.gz
         dst: /usr/share/man/man1/
+homebrew_casks:
+  - name: cerca
+    repository:
+      owner: matrices
+      name: homebrew-cerca
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    homepage: https://cerca.dev
+    description: The official CLI for Cerca.
+    license: Apache-2.0
+    binary: "cerca"
+    completions:
+      bash: "completions/cerca.bash"
+      zsh: "completions/cerca.zsh"
+      fish: "completions/cerca.fish"
+    manpages:
+    - man/man1/cerca.1.gz
