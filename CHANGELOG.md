@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0 (2026-05-07)
+
+Full Changelog: [v0.1.0...v0.2.0](https://github.com/matrices/cerca-cli/compare/v0.1.0...v0.2.0)
+
+### Features
+
+* **api:** api update ([c1baf5e](https://github.com/matrices/cerca-cli/commit/c1baf5e3302db60bc7fdc58265b0f72a4eba7687))
+* **api:** api update ([babea2b](https://github.com/matrices/cerca-cli/commit/babea2ba706994b69fa8818fbc578f13a5fb1a2c))
+* **api:** api update ([1864094](https://github.com/matrices/cerca-cli/commit/18640949eec015dcbfc4c972bed8c5d59e0fc526))
+
 ## 0.1.0 (2026-05-01)
 
 Full Changelog: [v0.0.1...v0.1.0](https://github.com/matrices/cerca-cli/compare/v0.0.1...v0.1.0)

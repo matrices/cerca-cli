@@ -71,6 +71,19 @@ func TestThreadsList(t *testing.T) {
 	})
 }
 
+func TestThreadsActivity(t *testing.T) {
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"threads", "activity",
+			"--agent-id", "agent_abc123",
+			"--thread-id", "thread_abc123",
+			"--fleet-id", "fleetId",
+		)
+	})
+}
+
 func TestThreadsCancel(t *testing.T) {
 	t.Run("regular flags", func(t *testing.T) {
 		mocktest.TestRunMockTestWithFlags(
@@ -103,6 +116,22 @@ func TestThreadsCompact(t *testing.T) {
 			"threads", "compact",
 			"--agent-id", "agent_abc123",
 			"--thread-id", "thread_abc123",
+		)
+	})
+}
+
+func TestThreadsListMessages(t *testing.T) {
+	t.Run("regular flags", func(t *testing.T) {
+		mocktest.TestRunMockTestWithFlags(
+			t,
+			"--api-key", "string",
+			"threads", "list-messages",
+			"--max-items", "10",
+			"--agent-id", "agent_abc123",
+			"--thread-id", "thread_abc123",
+			"--cursor", "42",
+			"--fleet-id", "fleetId",
+			"--limit", "100",
 		)
 	})
 }

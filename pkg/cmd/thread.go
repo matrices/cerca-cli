@@ -73,7 +73,7 @@ var threadsRetrieve = cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:      "include-messages",
-			Usage:     "When true, includes message content in the thread detail.",
+			Usage:     "Deprecated compatibility flag. Thread detail includes a bounded recent message page by default; pass `false` only to opt out when no message pagination params are present.",
 			QueryPath: "includeMessages",
 		},
 	},
@@ -117,6 +117,31 @@ var threadsList = cli.Command{
 		},
 	},
 	Action:          handleThreadsList,
+	HideHelpCommand: true,
+}
+
+var threadsActivity = cli.Command{
+	Name:    "activity",
+	Usage:   "Fetch compact current and recent activity for a thread without returning\ntranscript content or runtime debug state.",
+	Suggest: true,
+	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
+		},
+		&requestflag.Flag[string]{
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
+		},
+		&requestflag.Flag[string]{
+			Name:      "fleet-id",
+			Usage:     "Optional fleet id for index-backed authorization.",
+			QueryPath: "fleetId",
+		},
+	},
+	Action:          handleThreadsActivity,
 	HideHelpCommand: true,
 }
 
@@ -177,6 +202,45 @@ var threadsCompact = cli.Command{
 		},
 	},
 	Action:          handleThreadsCompact,
+	HideHelpCommand: true,
+}
+
+var threadsListMessages = cli.Command{
+	Name:    "list-messages",
+	Usage:   "List a bounded page of transcript messages for a thread, newest first. Use the\nreturned `cursor` to page older messages.",
+	Suggest: true,
+	Flags: []cli.Flag{
+		&requestflag.Flag[string]{
+			Name:      "agent-id",
+			Required:  true,
+			PathParam: "agentId",
+		},
+		&requestflag.Flag[string]{
+			Name:      "thread-id",
+			Required:  true,
+			PathParam: "threadId",
+		},
+		&requestflag.Flag[string]{
+			Name:      "cursor",
+			Usage:     "Cursor returned by a previous thread messages response.",
+			QueryPath: "cursor",
+		},
+		&requestflag.Flag[string]{
+			Name:      "fleet-id",
+			Usage:     "Optional fleet id for index-backed authorization.",
+			QueryPath: "fleetId",
+		},
+		&requestflag.Flag[string]{
+			Name:      "limit",
+			Usage:     "Maximum number of messages to include, capped at 500.",
+			QueryPath: "limit",
+		},
+		&requestflag.Flag[int64]{
+			Name:  "max-items",
+			Usage: "The maximum number of items to return (use -1 for unlimited).",
+		},
+	},
+	Action:          handleThreadsListMessages,
 	HideHelpCommand: true,
 }
 
@@ -410,6 +474,60 @@ func handleThreadsList(ctx context.Context, cmd *cli.Command) error {
 	}
 }
 
+func handleThreadsActivity(ctx context.Context, cmd *cli.Command) error {
+	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
+	unusedArgs := cmd.Args().Slice()
+	if !cmd.IsSet("agent-id") && len(unusedArgs) > 0 {
+		cmd.Set("agent-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
+	if !cmd.IsSet("thread-id") && len(unusedArgs) > 0 {
+		cmd.Set("thread-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
+	if len(unusedArgs) > 0 {
+		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
+	}
+
+	options, err := flagOptions(
+		cmd,
+		apiquery.NestedQueryFormatBrackets,
+		apiquery.ArrayQueryFormatComma,
+		EmptyBody,
+		false,
+	)
+	if err != nil {
+		return err
+	}
+
+	params := cercago.ThreadActivityParams{}
+
+	var res []byte
+	options = append(options, option.WithResponseBodyInto(&res))
+	_, err = client.Threads.Activity(
+		ctx,
+		cmd.Value("agent-id").(string),
+		cmd.Value("thread-id").(string),
+		params,
+		options...,
+	)
+	if err != nil {
+		return err
+	}
+
+	obj := gjson.ParseBytes(res)
+	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
+	transform := cmd.Root().String("transform")
+	return ShowJSON(obj, ShowJSONOpts{
+		ExplicitFormat: explicitFormat,
+		Format:         format,
+		RawOutput:      cmd.Root().Bool("raw-output"),
+		Title:          "threads activity",
+		Transform:      transform,
+	})
+}
+
 func handleThreadsCancel(ctx context.Context, cmd *cli.Command) error {
 	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
 	unusedArgs := cmd.Args().Slice()
@@ -561,6 +679,80 @@ func handleThreadsCompact(ctx context.Context, cmd *cli.Command) error {
 		Title:          "threads compact",
 		Transform:      transform,
 	})
+}
+
+func handleThreadsListMessages(ctx context.Context, cmd *cli.Command) error {
+	client := cercago.NewClient(getDefaultRequestOptions(cmd)...)
+	unusedArgs := cmd.Args().Slice()
+	if !cmd.IsSet("agent-id") && len(unusedArgs) > 0 {
+		cmd.Set("agent-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
+	if !cmd.IsSet("thread-id") && len(unusedArgs) > 0 {
+		cmd.Set("thread-id", unusedArgs[0])
+		unusedArgs = unusedArgs[1:]
+	}
+	if len(unusedArgs) > 0 {
+		return fmt.Errorf("Unexpected extra arguments: %v", unusedArgs)
+	}
+
+	options, err := flagOptions(
+		cmd,
+		apiquery.NestedQueryFormatBrackets,
+		apiquery.ArrayQueryFormatComma,
+		EmptyBody,
+		false,
+	)
+	if err != nil {
+		return err
+	}
+
+	params := cercago.ThreadListMessagesParams{}
+
+	format := cmd.Root().String("format")
+	explicitFormat := cmd.Root().IsSet("format")
+	transform := cmd.Root().String("transform")
+	if format == "raw" {
+		var res []byte
+		options = append(options, option.WithResponseBodyInto(&res))
+		_, err = client.Threads.ListMessages(
+			ctx,
+			cmd.Value("agent-id").(string),
+			cmd.Value("thread-id").(string),
+			params,
+			options...,
+		)
+		if err != nil {
+			return err
+		}
+		obj := gjson.ParseBytes(res)
+		return ShowJSON(obj, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
+			Title:          "threads list-messages",
+			Transform:      transform,
+		})
+	} else {
+		iter := client.Threads.ListMessagesAutoPaging(
+			ctx,
+			cmd.Value("agent-id").(string),
+			cmd.Value("thread-id").(string),
+			params,
+			options...,
+		)
+		maxItems := int64(-1)
+		if cmd.IsSet("max-items") {
+			maxItems = cmd.Value("max-items").(int64)
+		}
+		return ShowJSONIterator(iter, maxItems, ShowJSONOpts{
+			ExplicitFormat: explicitFormat,
+			Format:         format,
+			RawOutput:      cmd.Root().Bool("raw-output"),
+			Title:          "threads list-messages",
+			Transform:      transform,
+		})
+	}
 }
 
 func handleThreadsStartTurn(ctx context.Context, cmd *cli.Command) error {
