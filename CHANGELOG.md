@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 (2026-05-08)
+
+Full Changelog: [v0.2.0...v0.2.1](https://github.com/matrices/cerca-cli/compare/v0.2.0...v0.2.1)
+
+### Chores
+
+* redact api-key headers in debug logs ([e64047f](https://github.com/matrices/cerca-cli/commit/e64047f3895aee6c901a0e949410de72fc62484b))
+* **test:** scope body requests to a single variant ([ae7d57b](https://github.com/matrices/cerca-cli/commit/ae7d57bf224a53df2f7231b806361c4ba86033a2))
+
 ## 0.2.0 (2026-05-07)
 
 Full Changelog: [v0.1.0...v0.2.0](https://github.com/matrices/cerca-cli/compare/v0.1.0...v0.2.0)
