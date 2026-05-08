@@ -37,7 +37,6 @@ var toolsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[[]map[string]any]{
 			Name:     "tool",
-			Required: true,
 			BodyPath: "tools",
 		},
 		&requestflag.Flag[string]{
@@ -63,7 +62,6 @@ var toolsCreate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "url",
-			Required: true,
 			BodyPath: "url",
 		},
 	},
@@ -174,7 +172,6 @@ var toolsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[[]map[string]any]{
 			Name:     "tool",
-			Required: true,
 			BodyPath: "tools",
 		},
 		&requestflag.Flag[string]{
@@ -200,7 +197,6 @@ var toolsUpdate = requestflag.WithInnerFlags(cli.Command{
 		},
 		&requestflag.Flag[string]{
 			Name:     "url",
-			Required: true,
 			BodyPath: "url",
 		},
 	},
