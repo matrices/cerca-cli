@@ -23,7 +23,6 @@ func TestToolsCreate(t *testing.T) {
 			"--approval", "always",
 			"--enabled=true",
 			"--execution", "{idempotencyKeyHeader: idempotencyKeyHeader, maxAttempts: 3, retryMode: safe_only, timeoutMs: 10000}",
-			"--url", "https://mcp.example.com",
 		)
 	})
 
@@ -53,7 +52,6 @@ func TestToolsCreate(t *testing.T) {
 			"--execution.max-attempts", "3",
 			"--execution.retry-mode", "safe_only",
 			"--execution.timeout-ms", "10000",
-			"--url", "https://mcp.example.com",
 		)
 	})
 
@@ -93,8 +91,7 @@ func TestToolsCreate(t *testing.T) {
 			"  idempotencyKeyHeader: idempotencyKeyHeader\n" +
 			"  maxAttempts: 3\n" +
 			"  retryMode: safe_only\n" +
-			"  timeoutMs: 10000\n" +
-			"url: https://mcp.example.com\n")
+			"  timeoutMs: 10000\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
@@ -131,7 +128,6 @@ func TestToolsUpdate(t *testing.T) {
 			"--approval", "always",
 			"--enabled=true",
 			"--execution", "{idempotencyKeyHeader: idempotencyKeyHeader, maxAttempts: 3, retryMode: safe_only, timeoutMs: 10000}",
-			"--url", "https://mcp.example.com",
 		)
 	})
 
@@ -162,7 +158,6 @@ func TestToolsUpdate(t *testing.T) {
 			"--execution.max-attempts", "3",
 			"--execution.retry-mode", "safe_only",
 			"--execution.timeout-ms", "10000",
-			"--url", "https://mcp.example.com",
 		)
 	})
 
@@ -202,8 +197,7 @@ func TestToolsUpdate(t *testing.T) {
 			"  idempotencyKeyHeader: idempotencyKeyHeader\n" +
 			"  maxAttempts: 3\n" +
 			"  retryMode: safe_only\n" +
-			"  timeoutMs: 10000\n" +
-			"url: https://mcp.example.com\n")
+			"  timeoutMs: 10000\n")
 		mocktest.TestRunMockTestWithPipeAndFlags(
 			t, pipeData,
 			"--api-key", "string",
