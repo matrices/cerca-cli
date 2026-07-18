@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 (2026-07-18)
+
+Full Changelog: [v0.2.2...v0.3.0](https://github.com/matrices/cerca-cli/compare/v0.2.2...v0.3.0)
+
+### Features
+
+* **stlc:** configurable CI runner and private-production-repo support in workflow templates ([07dea1d](https://github.com/matrices/cerca-cli/commit/07dea1dc71b19e186b4a818c1055cdcaf419b8f2))
+
 ## 0.2.2 (2026-05-13)
 
 Full Changelog: [v0.2.1...v0.2.2](https://github.com/matrices/cerca-cli/compare/v0.2.1...v0.2.2)
